@@ -36,6 +36,10 @@ app.use('/api/notes', require('./routes/notes'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/stats', require('./routes/stats'));
 
+app.get('/', (req, res) => {
+  res.send('DSAForge Backend Running 🚀');
+});
+
 app.get('/api/health', (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStates = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
