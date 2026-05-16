@@ -78,4 +78,3 @@ A complete, production-grade full-stack web application built exclusively for KL
 - **Frontend**: Deploy `frontend/` to **Vercel**. Set the Build Command to `npm run build` and Output to `dist`. Add `VITE_API_URL` to env vars.
 - **Backend**: Deploy `backend/` to **Render** or Railway. Add all `.env` variables to the platform settings. Set `NODE_ENV=production`. Make sure to configure CORS allowed origins correctly.
 
-Created with ♥ by nallapanenihemanthsai
