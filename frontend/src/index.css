@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-light-bg text-gray-900 transition-colors duration-200;
+  }
+
+  body.dark {
+    @apply bg-dark-bg text-gray-100;
+  }
+}
+
+@layer components {
+  .glass-nav {
+    @apply bg-white/80 backdrop-blur-md border-b border-light-border;
+  }
+  
+  .dark .glass-nav {
+    @apply bg-dark-surface/80 border-dark-border;
+  }
+
+  .card {
+    @apply bg-white border border-light-border rounded-xl shadow-sm transition-all duration-200;
+  }
+
+  .dark .card {
+    @apply bg-dark-surface border-dark-border shadow-none;
+  }
+
+  .btn-primary {
+    @apply bg-accent-light text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .dark .btn-primary {
+    @apply bg-accent-dark hover:bg-accent-light;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:bg-gray-200;
+  }
+  
+  .dark .btn-secondary {
+    @apply bg-gray-800 text-gray-300 hover:bg-gray-700;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-light focus:border-transparent outline-none transition-all duration-200;
+  }
+
+  .dark .input-field {
+    @apply bg-dark-bg border-gray-700 text-white focus:ring-accent-dark;
+  }
+
+  .page-hero {
+    @apply relative overflow-hidden rounded-2xl border border-light-border dark:border-dark-border p-6 md:p-8;
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.08) 0%, rgba(108, 99, 255, 0.02) 50%, transparent 100%);
+  }
+
+  .dark .page-hero {
+    background: linear-gradient(135deg, rgba(124, 110, 245, 0.15) 0%, rgba(13, 15, 20, 0.5) 60%);
+  }
+
+  .sheet-tab {
+    @apply flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all border border-transparent text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-dark-surface hover:border-light-border dark:hover:border-dark-border;
+  }
+
+  .sheet-tab-active {
+    @apply bg-accent-light text-white shadow-lg shadow-accent-light/25 border-accent-light;
+  }
+
+  .sheet-tab-count {
+    @apply text-xs px-1.5 py-0.5 rounded-md bg-black/10 font-semibold;
+  }
+
+  .sheet-tab-active .sheet-tab-count {
+    @apply bg-white/20;
+  }
+
+  .filter-chip {
+    @apply flex items-center gap-2 h-11 px-4 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-surface text-sm font-medium transition-colors;
+  }
+
+  .filter-chip-active {
+    @apply bg-accent-light/10 text-accent-light border-accent-light/40;
+  }
+
+  .filter-select {
+    @apply h-10 px-3 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-surface text-sm outline-none focus:ring-2 focus:ring-accent-light/30;
+  }
+
+  .stats-strip {
+    @apply flex gap-1 p-1 rounded-2xl bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border shrink-0;
+  }
+
+  .stats-strip-item {
+    @apply text-center px-5 py-3 rounded-xl;
+  }
+
+  .badge-easy {
+    @apply text-[10px] font-semibold px-2.5 py-0.5 rounded-md border text-emerald-700 bg-emerald-50 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800;
+  }
+
+  .badge-medium {
+    @apply text-[10px] font-semibold px-2.5 py-0.5 rounded-md border text-amber-700 bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800;
+  }
+
+  .badge-hard {
+    @apply text-[10px] font-semibold px-2.5 py-0.5 rounded-md border text-rose-700 bg-rose-50 border-rose-200 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-800;
+  }
+
+  .topic-pill {
+    @apply text-xs font-medium px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300;
+  }
+
+  .btn-code {
+    @apply inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-accent-light text-white text-sm font-semibold hover:bg-accent-hover transition-all shadow-sm hover:shadow-md hover:shadow-accent-light/20;
+  }
+
+  .problem-card {
+    @apply card p-5 hover:shadow-md hover:border-accent-light/30 transition-all duration-200;
+  }
+
+  .table-row-hover {
+    @apply hover:bg-gray-50/80 dark:hover:bg-dark-surface/40 transition-colors;
+  }
+
+  .pagination-btn {
+    @apply p-2 rounded-lg border border-light-border dark:border-dark-border hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 transition-colors;
+  }
+
+  .progress-ring {
+    --pct: 0;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: conic-gradient(#6c63ff calc(var(--pct) * 1%), #e2e8f0 0);
+    @apply flex items-center justify-center;
+  }
+
+  .dark .progress-ring {
+    background: conic-gradient(#7c6ef5 calc(var(--pct) * 1%), #242840 0);
+  }
+
+  .progress-ring-inner {
+    @apply w-[72px] h-[72px] rounded-full bg-white dark:bg-dark-surface flex flex-col items-center justify-center;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hero-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold bg-accent-light/10 text-accent-light border border-accent-light/20;
+  }
+
+  .section-subheading-bar {
+    @apply rounded-xl border border-light-border dark:border-dark-border bg-white/60 dark:bg-dark-surface/60 px-5 py-4;
+  }
+
+  .section-subheading-bar h2 {
+    @apply text-lg font-bold text-gray-900 dark:text-white;
+  }
+
+  .section-subheading-bar p {
+    @apply text-sm text-gray-500 mt-1;
+  }
+
+  .section-header-btn {
+    @apply flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50/80 dark:hover:bg-dark-bg/50 transition-colors;
+  }
+
+  .section-title {
+    @apply text-base font-bold text-gray-900 dark:text-white;
+  }
+
+  .section-subtitle {
+    @apply text-xs text-gray-500 mt-0.5;
+  }
+
+  .section-progress-mini {
+    @apply w-24 h-2 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden;
+  }
+
+  .section-progress-mini > div {
+    @apply h-full bg-accent-light rounded-full transition-all duration-500;
+  }
+
+  .skeleton {
+    @apply bg-gray-200 dark:bg-gray-800 animate-pulse;
+  }
+}
+
+/* Custom scrollbar for Monaco and general layout */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-gray-700;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-600;
+}
