@@ -106,7 +106,8 @@ const startServer = async () => {
     });
     console.log('✅ MongoDB connected');
 
-    await verifyTransporter();
+    // Start transporter verification in the background so it doesn't block server startup
+    verifyTransporter().catch(err => console.error('Transporter verification background error:', err));
 
     await new Promise((resolve, reject) => {
       httpServer = app.listen(env.port, () => {
