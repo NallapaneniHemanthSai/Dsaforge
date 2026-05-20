@@ -260,7 +260,7 @@ export default function CodeEditor() {
   if (initialLoad) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-accent-light border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -357,7 +357,7 @@ export default function CodeEditor() {
           <div className="flex border-b border-light-border dark:border-dark-border bg-white dark:bg-dark-surface shrink-0">
             <button 
               onClick={() => setActiveTab('output')} 
-              className={`flex-1 py-2 text-sm font-medium border-b-2 transition-colors flex justify-center items-center gap-1.5 ${activeTab === 'output' ? 'border-accent-light text-accent-light' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
+              className={`flex-1 py-2 text-sm font-medium border-b-2 transition-colors flex justify-center items-center gap-1.5 ${activeTab === 'output' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
             >
               <Terminal className="w-4 h-4" /> Output
             </button>
@@ -378,7 +378,7 @@ export default function CodeEditor() {
           <div className="flex-1 p-4 overflow-y-auto font-mono text-sm">
             {isRunning ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-500 space-y-4">
-                <div className="w-8 h-8 border-4 border-accent-light border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                 <p>Compiling & Executing in sandbox...</p>
               </div>
             ) : !output ? (
@@ -438,7 +438,7 @@ export default function CodeEditor() {
             <textarea
               value={customInput}
               onChange={(e) => setCustomInput(e.target.value)}
-              className="w-full h-24 p-3 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono focus:ring-2 focus:ring-accent-light outline-none resize-none transition-shadow"
+              className="w-full h-24 p-3 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-mono focus:ring-2 focus:ring-primary outline-none resize-none transition-shadow"
               placeholder="Enter inputs here separated by spaces or newlines..."
             ></textarea>
           </div>

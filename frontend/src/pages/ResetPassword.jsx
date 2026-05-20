@@ -89,7 +89,7 @@ export default function ResetPassword() {
       <div className="w-full max-w-md card p-8">
         <div className="flex flex-col items-center mb-8 text-center">
           <Link to="/" className="mb-6">
-            <Zap className="h-10 w-10 text-accent-light" />
+            <Zap className="h-10 w-10 text-primary" />
           </Link>
           <h2 className="text-2xl font-bold">Create New Password</h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">

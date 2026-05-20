@@ -93,8 +93,8 @@ export default function Profile() {
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in pb-12">
       
       {/* Header Profile Card */}
-      <div className="card p-8 flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-accent-light/10 to-transparent dark:from-accent-dark/10 border-none shadow-none">
-        <div className="w-24 h-24 rounded-full bg-accent-light text-white flex items-center justify-center text-4xl font-bold shadow-lg shrink-0">
+      <div className="card p-8 flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-primary/10 to-transparent dark:from-primary-hover/10 border-none shadow-none">
+        <div className="w-24 h-24 rounded-full bg-primary text-white flex items-center justify-center text-4xl font-bold shadow-lg shrink-0">
           {user.name.charAt(0).toUpperCase()}
         </div>
         <div className="text-center md:text-left flex-1">

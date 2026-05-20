@@ -185,7 +185,7 @@ export default function Problems() {
         </td>
         <td className="px-5 py-3.5">
           <div className="flex items-center gap-2 min-w-0">
-            <a href={problem.link} target="_blank" rel="noreferrer" className="font-medium hover:text-accent-light truncate flex items-center gap-1">
+            <a href={problem.link} target="_blank" rel="noreferrer" className="font-medium hover:text-primary truncate flex items-center gap-1">
               {problem.title}
               <ExternalLink className="w-3.5 h-3.5 opacity-40 shrink-0" />
             </a>
@@ -201,7 +201,7 @@ export default function Problems() {
           <button
             type="button"
             onClick={() => toggleBookmark(problem.id)}
-            className={`p-2 rounded-lg ${prog?.bookmarked ? 'text-accent-light bg-accent-light/15' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+            className={`p-2 rounded-lg ${prog?.bookmarked ? 'text-primary bg-primary/15' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
           >
             <Bookmark className={`w-4 h-4 ${prog?.bookmarked ? 'fill-current' : ''}`} />
           </button>
@@ -265,8 +265,8 @@ export default function Problems() {
               <Bookmark className={`w-4 h-4 ${bookmarkedOnly ? 'fill-current' : ''}`} /> Saved
             </button>
             <div className="flex rounded-xl border border-light-border dark:border-dark-border overflow-hidden">
-              <button type="button" onClick={() => setViewMode('table')} className={`p-2.5 ${viewMode === 'table' ? 'bg-accent-light text-white' : 'bg-white dark:bg-dark-surface'}`}><List className="w-4 h-4" /></button>
-              <button type="button" onClick={() => setViewMode('grid')} className={`p-2.5 ${viewMode === 'grid' ? 'bg-accent-light text-white' : 'bg-white dark:bg-dark-surface'}`}><LayoutGrid className="w-4 h-4" /></button>
+              <button type="button" onClick={() => setViewMode('table')} className={`p-2.5 ${viewMode === 'table' ? 'bg-primary text-white' : 'bg-white dark:bg-dark-surface'}`}><List className="w-4 h-4" /></button>
+              <button type="button" onClick={() => setViewMode('grid')} className={`p-2.5 ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white dark:bg-dark-surface'}`}><LayoutGrid className="w-4 h-4" /></button>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 items-center">
@@ -339,8 +339,8 @@ export default function Problems() {
             const prog = progress[p.id];
             return (
               <div key={p.id} className="problem-card">
-                <p className="text-xs text-accent-light font-medium mb-2">{p.section}</p>
-                <a href={p.link} target="_blank" rel="noreferrer" className="font-semibold line-clamp-2 hover:text-accent-light">{p.title}</a>
+                <p className="text-xs text-primary font-medium mb-2">{p.section}</p>
+                <a href={p.link} target="_blank" rel="noreferrer" className="font-semibold line-clamp-2 hover:text-primary">{p.title}</a>
                 <div className="flex gap-2 mt-3">
                   <span className="topic-pill">{p.topic}</span>
                   <DifficultyBadge diff={p.difficulty} />

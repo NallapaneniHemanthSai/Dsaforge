@@ -176,14 +176,14 @@ export default function Dashboard() {
       const count = stats.heatmapData[dateStr] || 0;
       
       let colorClass = "bg-gray-150 dark:bg-gray-800/60";
-      if (count === 1) colorClass = "bg-accent-light/20 border border-accent-light/10";
-      else if (count === 2) colorClass = "bg-accent-light/50 border border-accent-light/20";
-      else if (count >= 3) colorClass = "bg-accent-light border border-accent-hover";
+      if (count === 1) colorClass = "bg-primary/20 border border-primary/10";
+      else if (count === 2) colorClass = "bg-primary/50 border border-primary/20";
+      else if (count >= 3) colorClass = "bg-primary border border-primary-hover";
       
       col.push(
         <div 
           key={`${w}-${d}`} 
-          className={`w-3.5 h-3.5 rounded-[3px] transition-all ${colorClass} cursor-pointer hover:ring-2 hover:ring-accent-light hover:scale-115`}
+          className={`w-3.5 h-3.5 rounded-[3px] transition-all ${colorClass} cursor-pointer hover:ring-2 hover:ring-primary hover:scale-115`}
           title={`${count} problems solved on ${dateStr}`}
         />
       );
@@ -195,7 +195,7 @@ export default function Dashboard() {
     <div className="space-y-8 animate-fade-in p-2 max-w-7xl mx-auto">
       
       {/* Welcome Banner */}
-      <GlassCard hover={false} className="p-8 bg-gradient-to-br from-accent-light/[0.08] via-purple-500/[0.02] to-transparent border-none flex flex-col sm:flex-row justify-between sm:items-center gap-6">
+      <GlassCard hover={false} className="p-8 bg-gradient-to-br from-primary/[0.08] via-purple-500/[0.02] to-transparent border-none flex flex-col sm:flex-row justify-between sm:items-center gap-6">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
             Welcome back, {user.name.split(' ')[0]} 👋
@@ -227,15 +227,15 @@ export default function Dashboard() {
         <GlassCard hover={false} className="p-6 lg:col-span-2 flex flex-col justify-between overflow-hidden">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-              <Award className="w-5 h-5 text-accent-light" /> Solved Heatmap
+              <Award className="w-5 h-5 text-primary" /> Solved Heatmap
             </h3>
             <div className="flex items-center text-xs text-gray-500 gap-2">
               Less
               <div className="flex gap-1">
                 <div className="w-3.5 h-3.5 rounded-[3px] bg-gray-150 dark:bg-gray-800"></div>
-                <div className="w-3.5 h-3.5 rounded-[3px] bg-accent-light/20"></div>
-                <div className="w-3.5 h-3.5 rounded-[3px] bg-accent-light/50"></div>
-                <div className="w-3.5 h-3.5 rounded-[3px] bg-accent-light"></div>
+                <div className="w-3.5 h-3.5 rounded-[3px] bg-primary/20"></div>
+                <div className="w-3.5 h-3.5 rounded-[3px] bg-primary/50"></div>
+                <div className="w-3.5 h-3.5 rounded-[3px] bg-primary"></div>
               </div>
               More
             </div>
@@ -250,21 +250,21 @@ export default function Dashboard() {
 
         {/* Weekly Goals Card */}
         <div className="flex flex-col gap-6">
-          <GlassCard hover={false} className="p-6 bg-gradient-to-br from-accent-light/[0.03] to-transparent">
+          <GlassCard hover={false} className="p-6 bg-gradient-to-br from-primary/[0.03] to-transparent">
             <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Target className="w-5 h-5 text-accent-light animate-pulse" /> Weekly Placement Goal
+              <Target className="w-5 h-5 text-primary animate-pulse" /> Weekly Placement Goal
             </h3>
             <div className="flex justify-between items-end mb-2">
               <span className="text-3xl font-extrabold text-gray-900 dark:text-white">
                 {stats.solvedThisWeek} <span className="text-xs text-gray-500 font-normal">/ {stats.weeklyGoal} solved</span>
               </span>
-              <span className="text-sm font-semibold text-accent-light">
+              <span className="text-sm font-semibold text-primary">
                 {Math.min(100, Math.round((stats.solvedThisWeek / stats.weeklyGoal) * 100))}%
               </span>
             </div>
             <div className="w-full h-3 bg-gray-150 dark:bg-gray-850 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-accent-light to-purple-500 rounded-full transition-all duration-1000" 
+                className="h-full bg-gradient-to-r from-primary to-purple-500 rounded-full transition-all duration-1000" 
                 style={{ width: `${Math.min(100, (stats.solvedThisWeek / stats.weeklyGoal) * 100)}%` }}
               ></div>
             </div>
@@ -305,7 +305,7 @@ export default function Dashboard() {
         {/* Topic Breakdown Radar */}
         <GlassCard hover={false} className="p-6 lg:col-span-2 flex flex-col justify-between">
           <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-            <BarChart2 className="w-5 h-5 text-accent-light" /> Topic Strength Breakdown
+            <BarChart2 className="w-5 h-5 text-primary" /> Topic Strength Breakdown
           </h3>
           <div className="h-72 flex items-center justify-center">
             {topicProgress.length > 0 ? (
@@ -314,7 +314,7 @@ export default function Dashboard() {
                   <PolarGrid stroke="#888888" strokeWidth={0.5} strokeDasharray="3 3" />
                   <PolarAngleAxis dataKey="subject" tick={{ fill: '#888888', fontSize: 11 }} />
                   <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#888888', fontSize: 9 }} />
-                  <Radar name="Solved Strength" dataKey="A" stroke="#6C63FF" fill="#6C63FF" fillOpacity={0.2} />
+                  <Radar name="Solved Strength" dataKey="A" stroke="#6366F1" fill="#6366F1" fillOpacity={0.2} />
                   <Tooltip cursor={{ fill: 'transparent' }} />
                 </RadarChart>
               </ResponsiveContainer>
@@ -328,7 +328,7 @@ export default function Dashboard() {
         {/* Difficulty Breakdown Doughnut */}
         <GlassCard hover={false} className="p-6 flex flex-col justify-between">
           <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-            <PieIcon className="w-5 h-5 text-accent-light" /> Difficulty Breakdown
+            <PieIcon className="w-5 h-5 text-primary" /> Difficulty Breakdown
           </h3>
           <div className="h-56 flex items-center justify-center">
             {difficultySplit.some(d => d.value > 0) ? (
@@ -386,9 +386,9 @@ export default function Dashboard() {
           <div>
             <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">Quick Navigation</h3>
             <div className="grid grid-cols-2 gap-4">
-              <Link to="/problems" className="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white/40 dark:bg-white/[0.01] hover:bg-gray-100 dark:hover:bg-dark-surface/50 hover:border-accent-light/35 transition-all group">
-                <Code2 className="w-6 h-6 text-accent-light mb-2 group-hover:scale-110 transition-transform" />
-                <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 group-hover:text-accent-light transition-colors">Problems</h4>
+              <Link to="/problems" className="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white/40 dark:bg-white/[0.01] hover:bg-gray-100 dark:hover:bg-dark-surface/50 hover:border-primary/35 transition-all group">
+                <Code2 className="w-6 h-6 text-primary mb-2 group-hover:scale-110 transition-transform" />
+                <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 group-hover:text-primary transition-colors">Problems</h4>
                 <p className="text-[10px] text-gray-500 mt-1">Practice & compile</p>
               </Link>
               <Link to="/notes" className="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white/40 dark:bg-white/[0.01] hover:bg-gray-100 dark:hover:bg-dark-surface/50 hover:border-emerald-500/35 transition-all group">
@@ -407,7 +407,7 @@ export default function Dashboard() {
         <GlassCard hover={false} className="p-6 lg:col-span-2">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-lg text-gray-900 dark:text-white">Recent Solver Activity</h3>
-            <Link to="/profile" className="text-sm font-semibold text-accent-light hover:underline inline-flex items-center gap-1">
+            <Link to="/profile" className="text-sm font-semibold text-primary hover:underline inline-flex items-center gap-1">
               View Activity Profile <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

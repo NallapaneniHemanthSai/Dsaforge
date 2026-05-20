@@ -82,11 +82,11 @@ export default function AdminUsers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <Link to="/admin/dashboard" className="text-sm font-semibold text-accent-light hover:underline flex items-center gap-1 mb-2">
+          <Link to="/admin/dashboard" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 mb-2">
             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
           </Link>
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
-            <UsersIcon className="w-8 h-8 text-accent-light" /> User Directory
+            <UsersIcon className="w-8 h-8 text-primary" /> User Directory
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             Search, suspend accounts, change user roles, and monitor registrations. Total: {totalUsers}
@@ -148,7 +148,7 @@ export default function AdminUsers() {
                   <tr key={u._id} className="hover:bg-gray-50/40 dark:hover:bg-white/[0.01]">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-accent-light/10 text-accent-light flex items-center justify-center font-bold">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
                           {u.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
