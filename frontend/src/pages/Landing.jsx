@@ -14,9 +14,9 @@ import useCountUp from '../hooks/useCountUp';
 /* ── Floating Orbs Background ── */
 const FloatingOrbs = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
-    <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-accent-light/10 dark:bg-accent-light/5 blur-[120px] animate-pulse" />
-    <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-purple-500/10 dark:bg-purple-500/5 blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-blue-500/5 blur-[80px] animate-pulse" style={{ animationDelay: '4s' }} />
+    <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-primary/10 dark:bg-primary/5 blur-[120px] animate-pulse" />
+    <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-secondary/10 dark:bg-secondary/5 blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-primary/5 blur-[80px] animate-pulse" style={{ animationDelay: '4s' }} />
   </div>
 );
 
@@ -48,7 +48,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-light/10 border border-accent-light/20 text-accent-light text-sm font-semibold mb-8"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold mb-8"
         >
           <Zap className="w-4 h-4" /> Built for KL University Students
         </motion.div>
@@ -63,7 +63,7 @@ const HeroSection = () => {
             Master DSA.
           </span>
           <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-light via-purple-500 to-blue-500">
+          <span className="gradient-text">
             Crack Placements.
           </span>
         </motion.h1>
@@ -86,7 +86,7 @@ const HeroSection = () => {
         >
           <Link
             to="/signup"
-            className="group inline-flex items-center gap-2 bg-accent-light hover:bg-accent-hover text-white text-lg font-semibold px-8 py-4 rounded-xl transition-all shadow-lg shadow-accent-light/25 hover:shadow-xl hover:shadow-accent-light/30"
+            className="group inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white text-lg font-semibold px-8 py-4 rounded-xl transition-all shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
           >
             Get Started Free
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -141,7 +141,7 @@ const HeroSection = () => {
                       <div key={i} className="flex flex-col gap-[3px]">
                         {Array.from({ length: 7 }).map((_, j) => {
                           const intensity = Math.random();
-                          const bg = intensity > 0.7 ? 'bg-accent-light' : intensity > 0.4 ? 'bg-accent-light/50' : intensity > 0.15 ? 'bg-accent-light/20' : 'bg-gray-200 dark:bg-gray-800';
+                          const bg = intensity > 0.7 ? 'bg-primary' : intensity > 0.4 ? 'bg-primary/50' : intensity > 0.15 ? 'bg-primary/20' : 'bg-gray-200 dark:bg-gray-800';
                           return <div key={j} className={`w-[8px] h-[8px] rounded-[2px] ${bg}`} />;
                         })}
                       </div>
@@ -160,12 +160,12 @@ const HeroSection = () => {
                         <span className="text-gray-400">{[78, 54, 32, 45][i]}%</span>
                       </div>
                       <div className="h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full">
-                        <div className="h-full bg-accent-light rounded-full" style={{ width: `${[78, 54, 32, 45][i]}%` }} />
+                        <div className="h-full bg-primary rounded-full" style={{ width: `${[78, 54, 32, 45][i]}%` }} />
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="rounded-xl bg-gradient-to-br from-accent-light to-purple-600 p-4 text-white">
+                <div className="rounded-xl bg-gradient-to-br from-primary to-purple-600 p-4 text-white">
                   <div className="text-xs opacity-80 mb-1">Weekly Goal</div>
                   <div className="text-2xl font-bold">5/7</div>
                   <div className="text-xs opacity-70 mt-1">2 more to go!</div>
@@ -209,7 +209,7 @@ const FeaturesSection = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {features.map((f, i) => (
           <GlassCard key={i} delay={i * 0.08} className="p-6 group">
-            <div className="w-12 h-12 rounded-xl bg-accent-light/10 text-accent-light flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <f.icon className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{f.title}</h3>
@@ -248,7 +248,7 @@ const WhySection = () => (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {whyItems.map((item, i) => (
           <GlassCard key={i} delay={i * 0.1} className="p-6 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-light/20 to-purple-500/20 text-accent-light flex items-center justify-center mx-auto mb-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-purple-500/20 text-primary flex items-center justify-center mx-auto mb-4">
               <item.icon className="w-7 h-7" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{item.title}</h3>
@@ -305,7 +305,7 @@ const SheetsSection = () => (
 
 /* ── Stats Section ── */
 const StatsSection = () => (
-  <section className="py-16 bg-gradient-to-r from-accent-light via-purple-600 to-blue-600 relative overflow-hidden">
+  <section className="py-16 bg-gradient-to-r from-primary via-purple-600 to-blue-600 relative overflow-hidden">
     <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -341,7 +341,7 @@ const HowItWorks = () => (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
           {steps.map((step, i) => (
             <GlassCard key={i} delay={i * 0.15} hover={false} className="p-8 text-center">
-              <div className="w-14 h-14 rounded-full bg-accent-light text-white flex items-center justify-center text-xl font-bold mx-auto mb-5 shadow-lg shadow-accent-light/30">
+              <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold mx-auto mb-5 shadow-lg shadow-primary/30">
                 {step.num}
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{step.title}</h3>
@@ -366,14 +366,14 @@ const CTASection = () => (
       >
         <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
           Ready to Forge Your
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-light to-purple-500"> DSA Skills</span>?
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500"> DSA Skills</span>?
         </h2>
         <p className="text-gray-500 dark:text-gray-400 mb-8 text-lg">
           Join your fellow KLU students and start your placement preparation journey today.
         </p>
         <Link
           to="/signup"
-          className="group inline-flex items-center gap-2 bg-accent-light hover:bg-accent-hover text-white text-lg font-semibold px-10 py-4 rounded-xl transition-all shadow-lg shadow-accent-light/25"
+          className="group inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white text-lg font-semibold px-10 py-4 rounded-xl transition-all shadow-lg shadow-primary/25"
         >
           Start Practicing Now
           <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

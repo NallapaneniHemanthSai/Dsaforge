@@ -117,8 +117,8 @@ export default function VerifyOTP() {
         </Link>
         
         <div className="flex flex-col items-center mb-8 text-center">
-          <div className="w-16 h-16 bg-accent-light/10 rounded-full flex items-center justify-center mb-4">
-            <Zap className="h-8 w-8 text-accent-light" />
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <Zap className="h-8 w-8 text-primary" />
           </div>
           <h2 className="text-2xl font-bold">Check your email</h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
@@ -163,7 +163,7 @@ export default function VerifyOTP() {
               <button
                 onClick={handleResend}
                 disabled={resending}
-                className="text-sm font-medium text-accent-light hover:underline"
+                className="text-sm font-medium text-primary hover:underline"
               >
                 {resending ? 'Sending...' : 'Resend Code'}
               </button>

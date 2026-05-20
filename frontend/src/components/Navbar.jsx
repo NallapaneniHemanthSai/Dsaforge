@@ -41,7 +41,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center">
           
           <Link to="/" className="flex items-center space-x-2 group">
-            <Zap className="h-6 w-6 text-accent-light group-hover:text-accent-hover transition-colors" />
+            <Zap className="h-6 w-6 text-primary group-hover:text-primary-hover transition-colors" />
             <span className="text-xl font-bold tracking-tight">DSAForge</span>
           </Link>
 
@@ -52,7 +52,7 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   to={link.path}
-                  className={`text-sm font-medium transition-colors hover:text-accent-light ${location.pathname === link.path ? 'text-accent-light' : 'text-gray-600 dark:text-gray-300'}`}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${location.pathname === link.path ? 'text-primary' : 'text-gray-600 dark:text-gray-300'}`}
                 >
                   {link.name}
                 </Link>
@@ -71,7 +71,7 @@ export default function Navbar() {
               {user ? (
                 <div className="relative group">
                   <button className="flex items-center space-x-2 focus:outline-none">
-                    <div className="w-8 h-8 rounded-full bg-accent-light text-white flex items-center justify-center font-bold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                   </button>

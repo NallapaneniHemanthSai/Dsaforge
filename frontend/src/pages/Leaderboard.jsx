@@ -96,7 +96,7 @@ export default function Leaderboard() {
     <div className="space-y-8 animate-fade-in p-1 max-w-7xl mx-auto">
       
       {/* Header Panel */}
-      <GlassCard hover={false} className="p-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-gradient-to-br from-accent-light/[0.04] to-transparent">
+      <GlassCard hover={false} className="p-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-gradient-to-br from-primary/[0.04] to-transparent">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
             <Trophy className="w-8 h-8 text-yellow-500" /> Leaderboard Arena
@@ -110,19 +110,19 @@ export default function Leaderboard() {
         <div className="flex bg-gray-150 dark:bg-gray-850 p-1 rounded-xl shrink-0">
           <button 
             onClick={() => { setFilter('alltime'); setPage(1); }}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${filter === 'alltime' ? 'bg-white dark:bg-dark-surface shadow-sm text-accent-light' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
+            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${filter === 'alltime' ? 'bg-white dark:bg-dark-surface shadow-sm text-primary' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
           >
             All-Time
           </button>
           <button 
             onClick={() => { setFilter('month'); setPage(1); }}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${filter === 'month' ? 'bg-white dark:bg-dark-surface shadow-sm text-accent-light' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
+            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${filter === 'month' ? 'bg-white dark:bg-dark-surface shadow-sm text-primary' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
           >
             This Month
           </button>
           <button 
             onClick={() => { setFilter('week'); setPage(1); }}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${filter === 'week' ? 'bg-white dark:bg-dark-surface shadow-sm text-accent-light' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
+            className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${filter === 'week' ? 'bg-white dark:bg-dark-surface shadow-sm text-primary' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
           >
             This Week
           </button>
@@ -252,20 +252,20 @@ export default function Leaderboard() {
                   return (
                     <tr 
                       key={entry._id} 
-                      className={`hover:bg-gray-50/40 dark:hover:bg-white/[0.01] transition-colors ${isCurrentUser ? 'bg-accent-light/[0.04] dark:bg-accent-light/10 relative font-semibold' : ''}`}
+                      className={`hover:bg-gray-50/40 dark:hover:bg-white/[0.01] transition-colors ${isCurrentUser ? 'bg-primary/[0.04] dark:bg-primary/10 relative font-semibold' : ''}`}
                     >
                       <td className="px-6 py-4 whitespace-nowrap flex justify-center">
                         {getRankBadge(entry.rank)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-light to-purple-500 text-white flex items-center justify-center font-bold shadow-sm">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-500 text-white flex items-center justify-center font-bold shadow-sm">
                             {entry.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <div className="text-sm font-semibold flex items-center gap-2 text-gray-900 dark:text-white">
                               {entry.name}
-                              {isCurrentUser && <span className="text-[10px] bg-accent-light text-white px-2 py-0.5 rounded-full font-bold">You</span>}
+                              {isCurrentUser && <span className="text-[10px] bg-primary text-white px-2 py-0.5 rounded-full font-bold">You</span>}
                             </div>
                             <div className="text-xs text-gray-400">@{entry.username}</div>
                           </div>

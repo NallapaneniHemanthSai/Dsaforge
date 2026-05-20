@@ -62,7 +62,7 @@ export default function AdminDashboard() {
     { name: 'Attempted', count: problemStats.attempted || 0, fill: '#F59E0B' }
   ];
 
-  const COLORS = ['#6C63FF', '#EF4444'];
+  const COLORS = ['#6366F1', '#EF4444'];
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8">
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
-            <Shield className="w-8 h-8 text-accent-light" /> Admin Dashboard
+            <Shield className="w-8 h-8 text-primary" /> Admin Dashboard
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             Platform operations, analytics, and student directory controls
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
               <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Total Registrations</span>
               <h3 className="text-3xl font-bold mt-2 text-gray-900 dark:text-white">{userStats.total}</h3>
             </div>
-            <div className="p-3 rounded-xl bg-accent-light/10 text-accent-light">
+            <div className="p-3 rounded-xl bg-primary/10 text-primary">
               <UsersIcon className="w-6 h-6" />
             </div>
           </div>
@@ -133,13 +133,13 @@ export default function AdminDashboard() {
           <div className="text-xs text-gray-500 mt-4">Attempted: <span className="font-semibold text-amber-500">{problemStats.attempted}</span></div>
         </GlassCard>
 
-        <GlassCard hover={false} className="p-6 bg-accent-light/5 border-accent-light/20">
+        <GlassCard hover={false} className="p-6 bg-primary/5 border-primary/20">
           <div className="flex justify-between items-start">
             <div>
-              <span className="text-accent-light text-xs font-semibold uppercase tracking-wider">Demo / Preview Mode</span>
+              <span className="text-primary text-xs font-semibold uppercase tracking-wider">Demo / Preview Mode</span>
               <h3 className="text-sm font-semibold mt-2 text-gray-600 dark:text-gray-400">Limited mutations strictly enforced.</h3>
             </div>
-            <div className="p-3 rounded-xl bg-accent-light/10 text-accent-light">
+            <div className="p-3 rounded-xl bg-primary/10 text-primary">
               <Settings className="w-6 h-6" />
             </div>
           </div>
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
         <GlassCard hover={false} className="p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-              <PieChartIcon className="w-5 h-5 text-accent-light" /> Account Status Split
+              <PieChartIcon className="w-5 h-5 text-primary" /> Account Status Split
             </h3>
           </div>
           <div className="h-64 flex items-center justify-center">
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="flex justify-center gap-6 mt-4 text-xs font-semibold">
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-accent-light" /> Active: {userStats.active}</div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-primary" /> Active: {userStats.active}</div>
             <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /> Suspended: {userStats.suspended}</div>
           </div>
         </GlassCard>
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
         <GlassCard hover={false} className="p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-              <BarChart2 className="w-5 h-5 text-accent-light" /> Problem Submissions Overview
+              <BarChart2 className="w-5 h-5 text-primary" /> Problem Submissions Overview
             </h3>
           </div>
           <div className="h-64 flex items-center justify-center">

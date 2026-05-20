@@ -9,7 +9,7 @@ export default function Footer() {
           
           <div className="flex flex-col items-center md:items-start max-w-sm">
             <Link to="/" className="flex items-center space-x-2 group mb-4">
-              <Zap className="h-6 w-6 text-accent-light" />
+              <Zap className="h-6 w-6 text-primary" />
               <span className="text-xl font-bold tracking-tight">DSAForge</span>
             </Link>
             <p className="text-gray-500 dark:text-gray-400 text-sm text-center md:text-left">
@@ -21,16 +21,16 @@ export default function Footer() {
             <div>
               <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-900 dark:text-white">Platform</h4>
               <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <li><Link to="/problems" className="hover:text-accent-light transition-colors">Problems</Link></li>
-                <li><Link to="/leaderboard" className="hover:text-accent-light transition-colors">Leaderboard</Link></li>
-                <li><Link to="/signup" className="hover:text-accent-light transition-colors">Sign Up</Link></li>
+                <li><Link to="/problems" className="hover:text-primary transition-colors">Problems</Link></li>
+                <li><Link to="/leaderboard" className="hover:text-primary transition-colors">Leaderboard</Link></li>
+                <li><Link to="/signup" className="hover:text-primary transition-colors">Sign Up</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4 text-sm uppercase tracking-wider text-gray-900 dark:text-white">Connect</h4>
               <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
                 <li>
-                  <a href="https://github.com/nallapanenihemanthsai" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-accent-light transition-colors">
+                  <a href="https://github.com/nallapanenihemanthsai" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-primary transition-colors">
                     <Code2 className="w-4 h-4" /> GitHub
                   </a>
                 </li>

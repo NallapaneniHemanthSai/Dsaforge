@@ -26,7 +26,7 @@ const Sidebar = () => {
       className={({ isActive }) =>
         `flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-colors group ${
           isActive 
-            ? 'bg-accent-light text-white shadow-md' 
+            ? 'bg-primary text-white shadow-md' 
             : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
         }`
       }
@@ -43,7 +43,7 @@ const Sidebar = () => {
       {/* Collapse Toggle */}
       <button 
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-6 bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-full p-1 text-gray-500 hover:text-accent-light z-10"
+        className="absolute -right-3 top-6 bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-full p-1 text-gray-500 hover:text-primary z-10"
       >
         {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
       </button>

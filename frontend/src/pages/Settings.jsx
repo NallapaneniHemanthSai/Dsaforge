@@ -64,7 +64,7 @@ export default function Settings() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-3">
-            <SettingsIcon className="w-8 h-8 text-accent-light" />
+            <SettingsIcon className="w-8 h-8 text-primary" />
             Preferences
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Customize your DSAForge experience.</p>
@@ -92,26 +92,26 @@ export default function Settings() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <button
                 onClick={() => setSettings({ ...settings, theme: 'light' })}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${settings.theme === 'light' ? 'border-accent-light bg-accent-light/5' : 'border-light-border dark:border-dark-border hover:border-gray-300 dark:hover:border-gray-600'}`}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${settings.theme === 'light' ? 'border-primary bg-primary/5' : 'border-light-border dark:border-dark-border hover:border-gray-300 dark:hover:border-gray-600'}`}
               >
-                <Sun className={`w-8 h-8 mb-2 ${settings.theme === 'light' ? 'text-accent-light' : 'text-gray-400'}`} />
-                <span className={`font-medium ${settings.theme === 'light' ? 'text-accent-light' : 'text-gray-600 dark:text-gray-400'}`}>Light</span>
+                <Sun className={`w-8 h-8 mb-2 ${settings.theme === 'light' ? 'text-primary' : 'text-gray-400'}`} />
+                <span className={`font-medium ${settings.theme === 'light' ? 'text-primary' : 'text-gray-600 dark:text-gray-400'}`}>Light</span>
               </button>
               
               <button
                 onClick={() => setSettings({ ...settings, theme: 'dark' })}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${settings.theme === 'dark' ? 'border-accent-light bg-accent-light/5' : 'border-light-border dark:border-dark-border hover:border-gray-300 dark:hover:border-gray-600'}`}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${settings.theme === 'dark' ? 'border-primary bg-primary/5' : 'border-light-border dark:border-dark-border hover:border-gray-300 dark:hover:border-gray-600'}`}
               >
-                <Moon className={`w-8 h-8 mb-2 ${settings.theme === 'dark' ? 'text-accent-light' : 'text-gray-400'}`} />
-                <span className={`font-medium ${settings.theme === 'dark' ? 'text-accent-light' : 'text-gray-600 dark:text-gray-400'}`}>Dark</span>
+                <Moon className={`w-8 h-8 mb-2 ${settings.theme === 'dark' ? 'text-primary' : 'text-gray-400'}`} />
+                <span className={`font-medium ${settings.theme === 'dark' ? 'text-primary' : 'text-gray-600 dark:text-gray-400'}`}>Dark</span>
               </button>
               
               <button
                 onClick={() => setSettings({ ...settings, theme: 'system' })}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${settings.theme === 'system' ? 'border-accent-light bg-accent-light/5' : 'border-light-border dark:border-dark-border hover:border-gray-300 dark:hover:border-gray-600'}`}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${settings.theme === 'system' ? 'border-primary bg-primary/5' : 'border-light-border dark:border-dark-border hover:border-gray-300 dark:hover:border-gray-600'}`}
               >
-                <Monitor className={`w-8 h-8 mb-2 ${settings.theme === 'system' ? 'text-accent-light' : 'text-gray-400'}`} />
-                <span className={`font-medium ${settings.theme === 'system' ? 'text-accent-light' : 'text-gray-600 dark:text-gray-400'}`}>System</span>
+                <Monitor className={`w-8 h-8 mb-2 ${settings.theme === 'system' ? 'text-primary' : 'text-gray-400'}`} />
+                <span className={`font-medium ${settings.theme === 'system' ? 'text-primary' : 'text-gray-600 dark:text-gray-400'}`}>System</span>
               </button>
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function Settings() {
                   checked={settings.emailNotifications}
                   onChange={(e) => setSettings({ ...settings, emailNotifications: e.target.checked })}
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-accent-light"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
               </label>
             </div>
 
@@ -150,9 +150,9 @@ export default function Settings() {
                   max="50" 
                   value={settings.weeklyGoal}
                   onChange={(e) => setSettings({ ...settings, weeklyGoal: parseInt(e.target.value) })}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-accent-light"
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-primary"
                 />
-                <span className="font-bold text-xl w-12 text-center text-accent-light bg-accent-light/10 rounded-lg py-1">{settings.weeklyGoal}</span>
+                <span className="font-bold text-xl w-12 text-center text-primary bg-primary/10 rounded-lg py-1">{settings.weeklyGoal}</span>
               </div>
             </div>
           </div>

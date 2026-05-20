@@ -37,11 +37,11 @@
   }
 
   .btn-primary {
-    @apply bg-accent-light text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-primary text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .dark .btn-primary {
-    @apply bg-accent-dark hover:bg-accent-light;
+    @apply bg-primary-hover hover:bg-primary;
   }
   
   .btn-secondary {
@@ -53,11 +53,11 @@
   }
 
   .input-field {
-    @apply w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-light focus:border-transparent outline-none transition-all duration-200;
+    @apply w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all duration-200;
   }
 
   .dark .input-field {
-    @apply bg-dark-bg border-gray-700 text-white focus:ring-accent-dark;
+    @apply bg-dark-bg border-gray-700 text-white focus:ring-primary-hover;
   }
 
   .page-hero {
@@ -74,7 +74,7 @@
   }
 
   .sheet-tab-active {
-    @apply bg-accent-light text-white shadow-lg shadow-accent-light/25 border-accent-light;
+    @apply bg-primary text-white shadow-lg shadow-primary/25 border-primary;
   }
 
   .sheet-tab-count {
@@ -90,11 +90,11 @@
   }
 
   .filter-chip-active {
-    @apply bg-accent-light/10 text-accent-light border-accent-light/40;
+    @apply bg-primary/10 text-primary border-primary/40;
   }
 
   .filter-select {
-    @apply h-10 px-3 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-surface text-sm outline-none focus:ring-2 focus:ring-accent-light/30;
+    @apply h-10 px-3 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-surface text-sm outline-none focus:ring-2 focus:ring-primary/30;
   }
 
   .stats-strip {
@@ -122,11 +122,11 @@
   }
 
   .btn-code {
-    @apply inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-accent-light text-white text-sm font-semibold hover:bg-accent-hover transition-all shadow-sm hover:shadow-md hover:shadow-accent-light/20;
+    @apply inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary-hover transition-all shadow-sm hover:shadow-md hover:shadow-primary/20;
   }
 
   .problem-card {
-    @apply card p-5 hover:shadow-md hover:border-accent-light/30 transition-all duration-200;
+    @apply card p-5 hover:shadow-md hover:border-primary/30 transition-all duration-200;
   }
 
   .table-row-hover {
@@ -142,12 +142,24 @@
     width: 88px;
     height: 88px;
     border-radius: 50%;
-    background: conic-gradient(#6c63ff calc(var(--pct) * 1%), #e2e8f0 0);
+    background: conic-gradient(#6366F1 calc(var(--pct) * 1%), #e4e4e7 0);
     @apply flex items-center justify-center;
   }
 
   .dark .progress-ring {
-    background: conic-gradient(#7c6ef5 calc(var(--pct) * 1%), #242840 0);
+    background: conic-gradient(#818CF8 calc(var(--pct) * 1%), #27272A 0);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-shimmer;
+  }
+
+  .glow-border {
+    @apply border border-primary/30 shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-shadow duration-300 hover:shadow-[0_0_25px_rgba(99,102,241,0.5)];
+  }
+
+  .premium-shadow {
+    @apply shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)];
   }
 
   .progress-ring-inner {
@@ -164,7 +176,7 @@
   }
 
   .hero-badge {
-    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold bg-accent-light/10 text-accent-light border border-accent-light/20;
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold bg-primary/10 text-primary border border-primary/20;
   }
 
   .section-subheading-bar {
@@ -196,7 +208,7 @@
   }
 
   .section-progress-mini > div {
-    @apply h-full bg-accent-light rounded-full transition-all duration-500;
+    @apply h-full bg-primary rounded-full transition-all duration-500;
   }
 
   .skeleton {

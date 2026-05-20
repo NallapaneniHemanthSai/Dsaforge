@@ -106,7 +106,7 @@ export default function Notes() {
   if (loading) {
     return (
       <div className="h-[calc(100vh-120px)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-accent-light border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -117,7 +117,7 @@ export default function Notes() {
       {/* Header bar */}
       <GlassCard hover={false} className="p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-accent-light/10 text-accent-light rounded-xl">
+          <div className="p-3 bg-primary/10 text-primary rounded-xl">
             <FileText className="w-6 h-6" />
           </div>
           <div>
@@ -136,21 +136,21 @@ export default function Notes() {
           <div className="flex bg-gray-100 dark:bg-gray-850 p-1 rounded-xl">
             <button 
               onClick={() => setViewMode('edit')}
-              className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${viewMode === 'edit' ? 'bg-white dark:bg-dark-surface shadow-sm text-accent-light' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
+              className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${viewMode === 'edit' ? 'bg-white dark:bg-dark-surface shadow-sm text-primary' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
               title="Edit View"
             >
               <Edit3 className="w-4 h-4" /> <span className="hidden sm:inline">Write</span>
             </button>
             <button 
               onClick={() => setViewMode('preview')}
-              className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${viewMode === 'preview' ? 'bg-white dark:bg-dark-surface shadow-sm text-accent-light' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
+              className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${viewMode === 'preview' ? 'bg-white dark:bg-dark-surface shadow-sm text-primary' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
               title="Preview View"
             >
               <Eye className="w-4 h-4" /> <span className="hidden sm:inline">Preview</span>
             </button>
             <button 
               onClick={() => setViewMode('split')}
-              className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${viewMode === 'split' ? 'bg-white dark:bg-dark-surface shadow-sm text-accent-light' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
+              className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${viewMode === 'split' ? 'bg-white dark:bg-dark-surface shadow-sm text-primary' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}
               title="Split View"
             >
               <Columns className="w-4 h-4" /> <span className="hidden sm:inline">Split</span>
@@ -221,7 +221,7 @@ export default function Notes() {
                           </SyntaxHighlighter>
                         </div>
                       ) : (
-                        <code className={`${className} bg-gray-200 dark:bg-gray-800/80 px-1.5 py-0.5 rounded text-sm text-accent-light`} {...props}>
+                        <code className={`${className} bg-gray-200 dark:bg-gray-800/80 px-1.5 py-0.5 rounded text-sm text-primary`} {...props}>
                           {children}
                         </code>
                       );
