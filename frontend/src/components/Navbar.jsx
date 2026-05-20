@@ -81,6 +81,9 @@ export default function Navbar() {
                       <p className="text-sm font-medium truncate">{user.name}</p>
                       <p className="text-xs text-gray-500 truncate">@{user.username}</p>
                     </div>
+                    {user?.role === 'admin' && (
+                      <Link to="/admin/dashboard" className="block px-4 py-2 text-sm text-purple-600 dark:text-purple-450 hover:bg-purple-50 dark:hover:bg-purple-950/20 font-semibold transition-colors">Admin Panel</Link>
+                    )}
                     <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Profile</Link>
                     <Link to="/settings" className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Settings</Link>
                     <button onClick={logout} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Logout</button>
@@ -134,6 +137,9 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="pt-4 flex flex-col space-y-2 border-t border-light-border dark:border-dark-border">
+                {user?.role === 'admin' && (
+                  <Link to="/admin/dashboard" className="block px-3 py-2 rounded-md text-base font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-50/10" onClick={() => setMobileMenuOpen(false)}>Admin Panel</Link>
+                )}
                 <Link to="/profile" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
                 <Link to="/settings" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800" onClick={() => setMobileMenuOpen(false)}>Settings</Link>
                 <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">Logout</button>

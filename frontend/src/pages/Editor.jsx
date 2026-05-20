@@ -2,12 +2,36 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { toast } from 'react-hot-toast';
-import { Play, Save, RotateCcw, Copy, ChevronLeft, Terminal, AlertCircle, Clock, Cpu, CheckCircle2 } from 'lucide-react';
+import { 
+  Play, Save, RotateCcw, Copy, ChevronLeft, Terminal, 
+  AlertCircle, Clock, Cpu, CheckCircle2, Globe 
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api';
 import { problems } from '../data/problems';
 import axios from 'axios';
+
+const LANGUAGES = {
+  java: {
+    id: 62,
+    name: 'Java (OpenJDK 13.0.1)',
+    monaco: 'java',
+    starter: `class Solution {\n    public static void main(String[] args) {\n        System.out.println("Hello from DSAForge!");\n        // Write your logic here\n    }\n}`
+  },
+  python: {
+    id: 71,
+    name: 'Python (3.8.1)',
+    monaco: 'python',
+    starter: `def solve():\n    print("Hello from DSAForge!")\n    # Write your logic here\n\nif __name__ == "__main__":\n    solve()`
+  },
+  cpp: {
+    id: 54,
+    name: 'C++ (GCC 9.2.0)',
+    monaco: 'cpp',
+    starter: `#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello from DSAForge!" << endl;\n    // Write your logic here\n    return 0;\n}`
+  }
+};
 
 export default function CodeEditor() {
   const { problemId } = useParams();
@@ -18,7 +42,13 @@ export default function CodeEditor() {
   const problem = problems.find(p => p.id === problemId);
   const editorRef = useRef(null);
   
-  const [code, setCode] = useState('');
+  const [selectedLang, setSelectedLang] = useState('java');
+  const [codes, setCodes] = useState({
+    java: LANGUAGES.java.starter,
+    python: LANGUAGES.python.starter,
+    cpp: LANGUAGES.cpp.starter
+  });
+  
   const [customInput, setCustomInput] = useState('');
   const [output, setOutput] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
@@ -26,7 +56,8 @@ export default function CodeEditor() {
   const [activeTab, setActiveTab] = useState('output'); // output, errors, info
   const [initialLoad, setInitialLoad] = useState(true);
 
-  const starterCode = `class Solution {\n  public static void main(String[] args) {\n    System.out.println("Hello from DSAForge!");\n    // Write your logic here\n  }\n}`;
+  // Sync editor value with current codes state when language changes
+  const currentCode = codes[selectedLang];
 
   useEffect(() => {
     if (!problem && problemId !== 'demo') {
@@ -36,20 +67,33 @@ export default function CodeEditor() {
 
     const loadCode = async () => {
       if (problemId === 'demo') {
-        setCode(starterCode);
         setInitialLoad(false);
         return;
       }
       try {
         const { data } = await api.get('/progress');
         const prog = data.progress.find(p => p.problemId === problemId);
+        
         if (prog && prog.code) {
-          setCode(prog.code);
-        } else {
-          setCode(starterCode);
+          const dbCode = prog.code;
+          try {
+            // Check if stored code is serialized multi-language JSON object
+            const parsed = JSON.parse(dbCode);
+            setCodes({
+              java: parsed.java || LANGUAGES.java.starter,
+              python: parsed.python || LANGUAGES.python.starter,
+              cpp: parsed.cpp || LANGUAGES.cpp.starter
+            });
+          } catch (e) {
+            // Fallback for legacy single-string (Java template) data
+            setCodes(prev => ({
+              ...prev,
+              java: dbCode
+            }));
+          }
         }
       } catch (error) {
-        setCode(starterCode);
+        console.error('Error loading saved code:', error);
       } finally {
         setInitialLoad(false);
       }
@@ -61,7 +105,6 @@ export default function CodeEditor() {
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
     
-    // Add keyboard shortcuts
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
       handleSave();
     });
@@ -70,7 +113,26 @@ export default function CodeEditor() {
     });
   };
 
+  const handleLanguageChange = (langKey) => {
+    if (editorRef.current) {
+      // Sync currently active code before changing state
+      const currentVal = editorRef.current.getValue();
+      setCodes(prev => ({
+        ...prev,
+        [selectedLang]: currentVal
+      }));
+    }
+    setSelectedLang(langKey);
+  };
+
   const handleSave = async () => {
+    let finalCodes = { ...codes };
+    if (editorRef.current) {
+      const currentVal = editorRef.current.getValue();
+      finalCodes[selectedLang] = currentVal;
+      setCodes(finalCodes);
+    }
+
     if (problemId === 'demo') {
       toast.success('Code saved locally (Demo mode)');
       return;
@@ -78,11 +140,9 @@ export default function CodeEditor() {
     
     setIsSaving(true);
     try {
-      const currentCode = editorRef.current.getValue();
-      await api.patch(`/progress/${problemId}/code`, { code: currentCode });
-      
-      // If output is successful, maybe mark as attempted or solved? Let user do it manually via problems page for now or add a button.
-      toast.success('Code saved successfully');
+      const payloadCode = JSON.stringify(finalCodes);
+      await api.patch(`/progress/${problemId}/code`, { code: payloadCode });
+      toast.success('Multi-language code bundle saved successfully');
     } catch (error) {
       toast.error('Failed to save code');
     } finally {
@@ -91,20 +151,30 @@ export default function CodeEditor() {
   };
 
   const handleReset = () => {
-    if (window.confirm('Are you sure you want to reset to the starter code? All current changes will be lost.')) {
-      setCode(starterCode);
-      toast.success('Code reset to starter template');
+    if (window.confirm(`Are you sure you want to reset your ${LANGUAGES[selectedLang].name} code to starter template?`)) {
+      setCodes(prev => ({
+        ...prev,
+        [selectedLang]: LANGUAGES[selectedLang].starter
+      }));
+      toast.success('Code reset successfully');
     }
   };
 
   const handleCopy = () => {
-    const currentCode = editorRef.current.getValue();
-    navigator.clipboard.writeText(currentCode);
+    const activeVal = editorRef.current ? editorRef.current.getValue() : codes[selectedLang];
+    navigator.clipboard.writeText(activeVal);
     toast.success('Code copied to clipboard');
   };
 
   const handleRun = async () => {
-    const currentCode = editorRef.current.getValue();
+    const activeVal = editorRef.current ? editorRef.current.getValue() : codes[selectedLang];
+    
+    // Sync code locally first
+    setCodes(prev => ({
+      ...prev,
+      [selectedLang]: activeVal
+    }));
+
     const apiKey = user?.judgeApiKey || localStorage.getItem('judgeApiKey');
 
     if (!apiKey) {
@@ -115,6 +185,8 @@ export default function CodeEditor() {
     setIsRunning(true);
     setOutput(null);
     setActiveTab('output');
+
+    const activeLanguageConfig = LANGUAGES[selectedLang];
 
     try {
       const options = {
@@ -128,8 +200,8 @@ export default function CodeEditor() {
           'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
         },
         data: {
-          language_id: 62, // Java
-          source_code: currentCode,
+          language_id: activeLanguageConfig.id,
+          source_code: activeVal,
           stdin: customInput
         }
       };
@@ -137,7 +209,7 @@ export default function CodeEditor() {
       const response = await axios.request(options);
       const token = response.data.token;
 
-      // Poll for result
+      // Poll for compilation completion
       let result = null;
       let attempts = 0;
       while (attempts < 10) {
@@ -156,7 +228,7 @@ export default function CodeEditor() {
       }
 
       if (!result) {
-        throw new Error('Execution timed out');
+        throw new Error('Execution timed out in sandbox environment');
       }
 
       setOutput(result);
@@ -167,15 +239,16 @@ export default function CodeEditor() {
         setActiveTab('errors');
       }
 
-      // Auto-save code after running
+      // Auto-save progress inside the database
       if (problemId !== 'demo') {
-        api.patch(`/progress/${problemId}/code`, { code: currentCode }).catch(console.error);
+        const finalCodes = { ...codes, [selectedLang]: activeVal };
+        api.patch(`/progress/${problemId}/code`, { code: JSON.stringify(finalCodes) }).catch(console.error);
       }
 
     } catch (error) {
       toast.error(error.message || 'Failed to execute code');
       setOutput({
-        status: { id: 13, description: 'Internal Error' },
+        status: { id: 13, description: 'Compilation / Sandbox Error' },
         compile_output: error.response?.data?.message || error.message
       });
       setActiveTab('errors');
@@ -184,7 +257,13 @@ export default function CodeEditor() {
     }
   };
 
-  if (initialLoad) return <div className="h-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-accent-light border-t-transparent rounded-full animate-spin"></div></div>;
+  if (initialLoad) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-accent-light border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-120px)] flex flex-col animate-fade-in -m-4 md:-m-8">
@@ -197,7 +276,7 @@ export default function CodeEditor() {
           
           <div>
             <h2 className="font-semibold flex items-center gap-2">
-              {problem ? problem.title : 'Playground Demo'}
+              {problem ? problem.title : 'Playground Playground'}
               {problem && (
                 <span className={`text-[10px] px-2 py-0.5 rounded border ${
                   problem.difficulty === 'Easy' ? 'text-green-600 bg-green-50 border-green-200 dark:bg-green-900/10 dark:text-green-400 dark:border-green-800' :
@@ -212,18 +291,32 @@ export default function CodeEditor() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button onClick={handleReset} className="btn-secondary px-3 py-1.5 flex items-center gap-1.5 text-sm" title="Reset (Ctrl+R)">
+        {/* Action Controls & Language Selector Dropdown */}
+        <div className="flex items-center gap-3">
+          <div className="relative flex items-center gap-1.5 bg-gray-50 dark:bg-dark-bg/60 border border-gray-200 dark:border-gray-800 px-3 py-1 rounded-xl">
+            <Globe className="w-4 h-4 text-gray-400" />
+            <select
+              value={selectedLang}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="bg-transparent text-sm font-semibold focus:outline-none cursor-pointer text-gray-700 dark:text-gray-300"
+            >
+              <option value="java" className="dark:bg-dark-surface">Java</option>
+              <option value="python" className="dark:bg-dark-surface">Python 3</option>
+              <option value="cpp" className="dark:bg-dark-surface">C++</option>
+            </select>
+          </div>
+
+          <button onClick={handleReset} className="btn-secondary px-3 py-1.5 flex items-center gap-1.5 text-sm" title="Reset current language">
             <RotateCcw className="w-4 h-4" /> <span className="hidden sm:inline">Reset</span>
           </button>
           <button onClick={handleCopy} className="btn-secondary px-3 py-1.5 flex items-center gap-1.5 text-sm" title="Copy Code">
             <Copy className="w-4 h-4" /> <span className="hidden sm:inline">Copy</span>
           </button>
-          <button onClick={handleSave} disabled={isSaving} className="btn-secondary px-3 py-1.5 flex items-center gap-1.5 text-sm" title="Save (Ctrl+S)">
+          <button onClick={handleSave} disabled={isSaving} className="btn-secondary px-3 py-1.5 flex items-center gap-1.5 text-sm" title="Save All Languages">
             {isSaving ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : <Save className="w-4 h-4" />}
             <span className="hidden sm:inline">Save</span>
           </button>
-          <button onClick={handleRun} disabled={isRunning} className="btn-primary px-4 py-1.5 flex items-center gap-1.5 text-sm shadow-md" title="Run (Ctrl+Enter)">
+          <button onClick={handleRun} disabled={isRunning} className="btn-primary px-4 py-1.5 flex items-center gap-1.5 text-sm shadow-md" title="Compile & Run Solution">
             {isRunning ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Play className="w-4 h-4 fill-current" />}
             Run Code
           </button>
@@ -232,15 +325,19 @@ export default function CodeEditor() {
 
       {/* Main Workspace */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        
         {/* Editor */}
         <div className="flex-1 relative lg:w-[65%] flex flex-col border-r border-light-border dark:border-dark-border">
           <Editor
             height="100%"
-            language="java"
+            language={LANGUAGES[selectedLang].monaco}
             theme={activeTheme === 'dark' ? 'vs-dark' : 'light'}
-            value={code}
-            onChange={(val) => setCode(val)}
+            value={currentCode}
+            onChange={(val) => {
+              setCodes(prev => ({
+                ...prev,
+                [selectedLang]: val
+              }));
+            }}
             onMount={handleEditorDidMount}
             options={{
               minimap: { enabled: false },
@@ -282,7 +379,7 @@ export default function CodeEditor() {
             {isRunning ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-500 space-y-4">
                 <div className="w-8 h-8 border-4 border-accent-light border-t-transparent rounded-full animate-spin"></div>
-                <p>Compiling & Executing in cloud...</p>
+                <p>Compiling & Executing in sandbox...</p>
               </div>
             ) : !output ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-500">

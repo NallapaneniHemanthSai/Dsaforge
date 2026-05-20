@@ -54,6 +54,21 @@ export default function Login() {
     }
   };
 
+  const handleDemoLogin = async (email, password) => {
+    setLoading(true);
+    try {
+      const { data } = await api.post('/auth/login', { email, password, rememberMe: false });
+      login(data.accessToken, data.user);
+      toast.success('Logged in successfully in preview mode!');
+      navigate('/dashboard');
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Demo login failed';
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg p-4">
       <div className="w-full max-w-md card p-8">
@@ -120,7 +135,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-primary py-2.5 flex justify-center items-center"
+            className="w-full btn-primary py-2.5 flex justify-center items-center font-medium"
           >
             {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : 'Sign In'}
           </button>
@@ -129,6 +144,34 @@ export default function Login() {
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
           Don't have an account? <Link to="/signup" className="text-accent-light hover:underline font-medium">Sign up</Link>
         </p>
+
+        {/* Recruiter Preview / Demo Account Section */}
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+          <div className="text-center mb-4">
+            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-accent-light/10 text-accent-light">
+              Recruiter & Guest Preview
+            </span>
+            <p className="text-xs text-gray-400 mt-2">Explore the platform instantly without registration</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => handleDemoLogin('demo@kluniversity.in', 'demo123')}
+              disabled={loading}
+              className="flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-dark-surface/50 hover:bg-gray-100 dark:hover:bg-dark-surface hover:border-accent-light/30 transition-all text-center"
+            >
+              <span className="text-xs font-bold text-gray-900 dark:text-white">Student Demo</span>
+              <span className="text-[10px] text-gray-500">Read-Only Preview</span>
+            </button>
+            <button
+              onClick={() => handleDemoLogin('admin@kluniversity.in', 'admin123')}
+              disabled={loading}
+              className="flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-dark-surface/50 hover:bg-gray-100 dark:hover:bg-dark-surface hover:border-accent-light/30 transition-all text-center"
+            >
+              <span className="text-xs font-bold text-gray-900 dark:text-white">Admin Demo</span>
+              <span className="text-[10px] text-gray-500">Full Dashboard</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
