@@ -26,6 +26,28 @@ const protect = async (req, res, next) => {
       }
 
       req.user = user;
+
+      // Restrict demo accounts to read-only preview mode (limited usage)
+      const demoEmails = ['demo@kluniversity.in', 'admin@kluniversity.in'];
+      if (demoEmails.includes(user.email)) {
+        const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
+        const allowedDemoMutations = [
+          '/api/progress/submit',
+          '/api/progress/run',
+          '/api/auth/logout',
+          '/api/auth/refresh'
+        ];
+        const currentPath = req.originalUrl || req.path;
+        const isAllowed = allowedDemoMutations.some(path => currentPath.includes(path));
+
+        if (isMutation && !isAllowed) {
+          return res.status(403).json({
+            message: 'This action is disabled for the Demo account to preserve platform preview integrity.',
+            code: 'DEMO_RESTRICTED'
+          });
+        }
+      }
+
       next();
     } catch (err) {
       if (err.name === 'TokenExpiredError') {
