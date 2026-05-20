@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const { env, validateEnv } = require('./config/env');
 const { verifyTransporter, getEmailStatus, closeTransporter } = require('./config/transporter');
 const { errorHandler } = require('./middleware/errorHandler');
+const seedDemoAccounts = require('./scripts/seed');
 
 const envStatus = validateEnv();
 if (!envStatus.ok) {
@@ -49,6 +50,7 @@ app.use('/api/progress', require('./routes/progress'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/stats', require('./routes/stats'));
+app.use('/api/admin', require('./routes/admin'));
 
 app.get('/', (req, res) => {
   res.send('DSAForge Backend Running 🚀');
@@ -123,6 +125,9 @@ const startServer = async () => {
       retryWrites: true,
     });
     console.log('✅ MongoDB connected');
+
+    // Seed demo accounts
+    await seedDemoAccounts();
 
     // Start transporter verification in the background so it doesn't block server startup
     verifyTransporter().catch(err => console.error('Transporter verification background error:', err));
