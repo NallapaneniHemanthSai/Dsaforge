@@ -18,8 +18,22 @@ if (!envStatus.ok) {
 const app = express();
 
 app.use(helmet());
+const allowedOrigins = [
+  'http://localhost:5175',
+  'https://dsaforge-five.vercel.app'
+];
+if (env.frontendUrl && !allowedOrigins.includes(env.frontendUrl)) {
+  allowedOrigins.push(env.frontendUrl);
+}
+
 app.use(cors({
-  origin: env.frontendUrl,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -116,7 +130,7 @@ const startServer = async () => {
     await new Promise((resolve, reject) => {
       httpServer = app.listen(env.port, () => {
         console.log(`⚡ DSAForge server running on http://localhost:${env.port}`);
-        console.log(`   Frontend CORS origin: ${env.frontendUrl}`);
+        console.log(`   Frontend CORS origins: ${allowedOrigins.join(', ')}`);
         console.log(`   Environment: ${env.nodeEnv}`);
         resolve();
       });
