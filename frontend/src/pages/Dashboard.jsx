@@ -1,15 +1,44 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, RotateCw, ListTodo, Target, Flame, ArrowRight, Code2, BookOpen } from 'lucide-react';
+import { 
+  CheckCircle2, RotateCw, ListTodo, Target, Flame, 
+  ArrowRight, Code2, BookOpen, BarChart2, PieChart as PieIcon, Award, Zap
+} from 'lucide-react';
+import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
-import { TOTAL_PROBLEMS, getProblemTitle } from '../data/problems';
+import { TOTAL_PROBLEMS, getProblemTitle, problems } from '../data/problems';
+import GlassCard from '../components/ui/GlassCard';
+import Skeleton from '../components/ui/Skeleton';
+import useCountUp from '../hooks/useCountUp';
+
+/* ── Stat Count Card Wrapper ── */
+const StatCard = ({ title, count, icon: Icon, colorClass, suffix = '', delay = 0 }) => {
+  const { count: displayCount, ref } = useCountUp(count);
+  return (
+    <GlassCard ref={ref} delay={delay} className="p-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">{title}</span>
+          <h3 className="text-3xl font-extrabold mt-2 text-gray-900 dark:text-white">
+            {displayCount}{suffix}
+          </h3>
+        </div>
+        <div className={`p-3 rounded-xl bg-white/60 dark:bg-white/[0.04] shadow-sm ${colorClass}`}>
+          <Icon className="w-6 h-6" />
+        </div>
+      </div>
+    </GlassCard>
+  );
+};
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [topicProgress, setTopicProgress] = useState([]);
+  const [difficultySplit, setDifficultySplit] = useState([]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -17,6 +46,69 @@ export default function Dashboard() {
         const { data } = await api.get('/stats/me');
         setStats(data);
         setError(null);
+
+        // Fetch user progress details to compute topic and difficulty breakdowns
+        const progressResponse = await api.get('/progress');
+        const userSolves = progressResponse.data.progress || [];
+
+        // 1. Compute Topic Progress Breakdown
+        const topicCounts = {};
+        const solvedTopicCounts = {};
+
+        // Aggregate total problems per topic
+        problems.forEach(p => {
+          topicCounts[p.topic] = (topicCounts[p.topic] || 0) + 1;
+        });
+
+        // Aggregate solved problems per topic
+        userSolves.forEach(solve => {
+          if (solve.status === 'solved') {
+            const originalProblem = problems.find(p => p.id === solve.problemId);
+            if (originalProblem) {
+              solvedTopicCounts[originalProblem.topic] = (solvedTopicCounts[originalProblem.topic] || 0) + 1;
+            }
+          }
+        });
+
+        const topicsArray = Object.keys(topicCounts).map(topic => {
+          const solved = solvedTopicCounts[topic] || 0;
+          const total = topicCounts[topic];
+          return {
+            subject: topic,
+            A: Math.round((solved / total) * 100), // percentage
+            solved,
+            total,
+            fullMark: 100
+          };
+        }).sort((a, b) => b.A - a.A).slice(0, 6); // Top 6 topics for layout
+
+        setTopicProgress(topicsArray);
+
+        // 2. Compute Difficulty Breakdown (Easy, Medium, Hard)
+        const difficultyCounts = { Easy: 0, Medium: 0, Hard: 0 };
+        const solvedDifficultyCounts = { Easy: 0, Medium: 0, Hard: 0 };
+
+        problems.forEach(p => {
+          if (difficultyCounts[p.difficulty] !== undefined) {
+            difficultyCounts[p.difficulty]++;
+          }
+        });
+
+        userSolves.forEach(solve => {
+          if (solve.status === 'solved') {
+            const originalProblem = problems.find(p => p.id === solve.problemId);
+            if (originalProblem && solvedDifficultyCounts[originalProblem.difficulty] !== undefined) {
+              solvedDifficultyCounts[originalProblem.difficulty]++;
+            }
+          }
+        });
+
+        setDifficultySplit([
+          { name: 'Easy', value: solvedDifficultyCounts.Easy, total: difficultyCounts.Easy, color: '#10B981' },
+          { name: 'Medium', value: solvedDifficultyCounts.Medium, total: difficultyCounts.Medium, color: '#F59E0B' },
+          { name: 'Hard', value: solvedDifficultyCounts.Hard, total: difficultyCounts.Hard, color: '#EF4444' }
+        ]);
+
       } catch (err) {
         console.error('Failed to fetch stats', err);
         setError('Could not load dashboard stats. Please refresh the page.');
@@ -29,14 +121,17 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-24 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[1,2,3,4].map(i => <div key={i} className="h-32 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>)}
+      <div className="p-8 space-y-6 max-w-7xl mx-auto">
+        <Skeleton className="h-10 w-64" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="h-64 bg-gray-200 dark:bg-gray-800 rounded-xl col-span-2"></div>
-          <div className="h-64 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Skeleton className="h-80 lg:col-span-2" />
+          <Skeleton className="h-80" />
         </div>
       </div>
     );
@@ -44,17 +139,18 @@ export default function Dashboard() {
 
   if (error || !stats || !user) {
     return (
-      <div className="card p-8 text-center">
-        <p className="text-gray-600 dark:text-gray-400">{error || 'Loading user data...'}</p>
-        {error && (
+      <div className="max-w-md mx-auto mt-12">
+        <GlassCard hover={false} className="p-8 text-center flex flex-col items-center">
+          <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Error Loading Dashboard</h3>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">{error}</p>
           <button
-            type="button"
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 rounded-lg bg-accent-light text-white font-medium hover:opacity-90"
+            className="btn-primary font-semibold"
           >
-            Refresh
+            Retry Loading
           </button>
-        )}
+        </GlassCard>
       </div>
     );
   }
@@ -79,15 +175,15 @@ export default function Dashboard() {
       const dateStr = date.toISOString().split('T')[0];
       const count = stats.heatmapData[dateStr] || 0;
       
-      let colorClass = "bg-gray-100 dark:bg-gray-800";
-      if (count === 1) colorClass = "bg-accent-light/30";
-      else if (count === 2) colorClass = "bg-accent-light/60";
-      else if (count >= 3) colorClass = "bg-accent-light";
+      let colorClass = "bg-gray-150 dark:bg-gray-800/60";
+      if (count === 1) colorClass = "bg-accent-light/20 border border-accent-light/10";
+      else if (count === 2) colorClass = "bg-accent-light/50 border border-accent-light/20";
+      else if (count >= 3) colorClass = "bg-accent-light border border-accent-hover";
       
       col.push(
         <div 
           key={`${w}-${d}`} 
-          className={`w-3 h-3 rounded-sm ${colorClass} cursor-pointer hover:ring-2 ring-accent-light ring-offset-1 dark:ring-offset-dark-bg`}
+          className={`w-3.5 h-3.5 rounded-[3px] transition-all ${colorClass} cursor-pointer hover:ring-2 hover:ring-accent-light hover:scale-115`}
           title={`${count} problems solved on ${dateStr}`}
         />
       );
@@ -96,178 +192,248 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in p-2 max-w-7xl mx-auto">
       
       {/* Welcome Banner */}
-      <div className="card p-6 bg-gradient-to-r from-accent-light/10 to-transparent dark:from-accent-dark/10 flex justify-between items-center border-none shadow-none">
+      <GlassCard hover={false} className="p-8 bg-gradient-to-br from-accent-light/[0.08] via-purple-500/[0.02] to-transparent border-none flex flex-col sm:flex-row justify-between sm:items-center gap-6">
         <div>
-          <h1 className="text-2xl font-bold mb-1">Hey {user.name.split(' ')[0]} 👋</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">Joined {joinDate} • Ready to forge some code?</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
+            Welcome back, {user.name.split(' ')[0]} 👋
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+            Registered on {joinDate} • Ready to crush your coding placement goals today?
+          </p>
         </div>
         {stats.currentStreak > 0 && (
-          <div className="hidden sm:flex items-center gap-2 bg-white dark:bg-dark-surface px-4 py-2 rounded-full shadow-sm border border-orange-200 dark:border-orange-900/50">
-            <Flame className="text-orange-500 w-5 h-5 fill-current" />
-            <span className="font-bold text-orange-600 dark:text-orange-400">{stats.currentStreak} Day Streak</span>
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2.5 rounded-full shadow-lg shadow-orange-500/25">
+            <Flame className="w-5 h-5 fill-current animate-bounce" />
+            <span className="font-bold text-sm">{stats.currentStreak} Day Coding Streak</span>
           </div>
         )}
+      </GlassCard>
+
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard title="Total Solved" count={stats.totalSolved} icon={CheckCircle2} colorClass="text-emerald-500 bg-emerald-500/10" delay={0} />
+        <StatCard title="Attempted" count={stats.totalAttempted} icon={RotateCw} colorClass="text-amber-500 bg-amber-500/10" delay={0.05} />
+        <StatCard title="Remaining" count={Math.max(0, TOTAL_PROBLEMS - stats.totalSolved)} icon={ListTodo} colorClass="text-blue-500 bg-blue-500/10" delay={0.1} />
+        <StatCard title="Success Rate" count={successRate} icon={Target} colorClass="text-purple-500 bg-purple-500/10" suffix="%" delay={0.15} />
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="card p-5 hover:-translate-y-1 transition-transform">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Solved</p>
-              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalSolved}</h3>
-            </div>
-            <div className="p-3 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400">
-              <CheckCircle2 className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
+      {/* Charts & Interactive Stats Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <div className="card p-5 hover:-translate-y-1 transition-transform">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Attempted</p>
-              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalAttempted}</h3>
-            </div>
-            <div className="p-3 rounded-lg bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400">
-              <RotateCw className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
-
-        <div className="card p-5 hover:-translate-y-1 transition-transform">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Remaining</p>
-              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{Math.max(0, TOTAL_PROBLEMS - stats.totalSolved)}</h3>
-            </div>
-            <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
-              <ListTodo className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
-
-        <div className="card p-5 hover:-translate-y-1 transition-transform">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Success Rate</p>
-              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{successRate}%</h3>
-            </div>
-            <div className="p-3 rounded-lg bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">
-              <Target className="w-6 h-6" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Activity Heatmap */}
-        <div className="card p-6 lg:col-span-2 overflow-x-auto">
+        {/* Heatmap Card */}
+        <GlassCard hover={false} className="p-6 lg:col-span-2 flex flex-col justify-between overflow-hidden">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="font-semibold text-lg">Activity (Last Year)</h3>
+            <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+              <Award className="w-5 h-5 text-accent-light" /> Solved Heatmap
+            </h3>
             <div className="flex items-center text-xs text-gray-500 gap-2">
               Less
               <div className="flex gap-1">
-                <div className="w-3 h-3 rounded-sm bg-gray-100 dark:bg-gray-800"></div>
-                <div className="w-3 h-3 rounded-sm bg-accent-light/30"></div>
-                <div className="w-3 h-3 rounded-sm bg-accent-light/60"></div>
-                <div className="w-3 h-3 rounded-sm bg-accent-light"></div>
+                <div className="w-3.5 h-3.5 rounded-[3px] bg-gray-150 dark:bg-gray-800"></div>
+                <div className="w-3.5 h-3.5 rounded-[3px] bg-accent-light/20"></div>
+                <div className="w-3.5 h-3.5 rounded-[3px] bg-accent-light/50"></div>
+                <div className="w-3.5 h-3.5 rounded-[3px] bg-accent-light"></div>
               </div>
               More
             </div>
           </div>
-          <div className="flex gap-1 min-w-max">
-            {heatmapCells.reverse()}
+          <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-250 dark:scrollbar-thumb-gray-850">
+            <div className="flex gap-1 min-w-max">
+              {heatmapCells.reverse()}
+            </div>
           </div>
-        </div>
+          <div className="text-xs text-gray-400 mt-4">Solves are updated dynamically on problem saves</div>
+        </GlassCard>
 
-        {/* Weekly Goal & Streak */}
-        <div className="space-y-6">
-          <div className="card p-6">
-            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-              <Target className="w-5 h-5 text-accent-light" /> Weekly Goal
+        {/* Weekly Goals Card */}
+        <div className="flex flex-col gap-6">
+          <GlassCard hover={false} className="p-6 bg-gradient-to-br from-accent-light/[0.03] to-transparent">
+            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <Target className="w-5 h-5 text-accent-light animate-pulse" /> Weekly Placement Goal
             </h3>
             <div className="flex justify-between items-end mb-2">
-              <span className="text-2xl font-bold">{stats.solvedThisWeek} <span className="text-sm text-gray-500 font-normal">/ {stats.weeklyGoal} solved</span></span>
-              <span className="text-sm font-medium text-accent-light">{Math.min(100, Math.round((stats.solvedThisWeek/stats.weeklyGoal)*100))}%</span>
+              <span className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                {stats.solvedThisWeek} <span className="text-xs text-gray-500 font-normal">/ {stats.weeklyGoal} solved</span>
+              </span>
+              <span className="text-sm font-semibold text-accent-light">
+                {Math.min(100, Math.round((stats.solvedThisWeek / stats.weeklyGoal) * 100))}%
+              </span>
             </div>
-            <div className="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+            <div className="w-full h-3 bg-gray-150 dark:bg-gray-850 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-accent-light rounded-full transition-all duration-1000" 
-                style={{ width: `${Math.min(100, (stats.solvedThisWeek/stats.weeklyGoal)*100)}%` }}
+                className="h-full bg-gradient-to-r from-accent-light to-purple-500 rounded-full transition-all duration-1000" 
+                style={{ width: `${Math.min(100, (stats.solvedThisWeek / stats.weeklyGoal) * 100)}%` }}
               ></div>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">
-              {stats.solvedThisWeek >= stats.weeklyGoal ? 'Goal crushed! Keep going! 🚀' : `${stats.weeklyGoal - stats.solvedThisWeek} more to reach your goal.`}
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-5 text-center leading-relaxed">
+              {stats.solvedThisWeek >= stats.weeklyGoal 
+                ? '🎉 Congratulations! You crushed this week\'s goal!' 
+                : `💡 Just ${stats.weeklyGoal - stats.solvedThisWeek} more solved problem${stats.weeklyGoal - stats.solvedThisWeek > 1 ? 's' : ''} left to hit your benchmark.`
+              }
             </p>
-          </div>
+          </GlassCard>
 
-          <div className="card p-6 bg-gradient-to-br from-orange-500/10 to-red-500/5 dark:from-orange-900/20 border-orange-100 dark:border-orange-900/20">
-            <h3 className="font-semibold text-lg mb-4 text-orange-600 dark:text-orange-400 flex items-center gap-2">
-              <Flame className="w-5 h-5 fill-current" /> Streaks
+          <GlassCard hover={false} className="p-6 bg-gradient-to-br from-orange-500/[0.04] to-red-500/[0.04] border-orange-500/10">
+            <h3 className="font-bold text-lg text-orange-600 dark:text-orange-400 mb-4 flex items-center gap-2">
+              <Flame className="w-5 h-5 fill-current" /> Streaks Ledger
             </h3>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Current</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.currentStreak} <span className="text-sm font-normal text-gray-500">days</span></p>
+                <p className="text-xs text-gray-500">Current Run</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  {stats.currentStreak} <span className="text-xs font-normal text-gray-500">days</span>
+                </p>
               </div>
-              <div className="w-px bg-orange-200 dark:bg-orange-800/50"></div>
+              <div className="w-px h-10 bg-orange-500/10"></div>
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Longest</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.longestStreak} <span className="text-sm font-normal text-gray-500">days</span></p>
+                <p className="text-xs text-gray-500">All-Time Peak</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  {stats.longestStreak} <span className="text-xs font-normal text-gray-500">days</span>
+                </p>
               </div>
             </div>
-          </div>
+          </GlassCard>
         </div>
       </div>
 
-      {/* Quick Actions & Recent */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card p-6">
-          <h3 className="font-semibold text-lg mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <Link to="/problems" className="p-4 rounded-xl border border-light-border dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-surface/50 transition-colors group">
-              <Code2 className="w-6 h-6 text-accent-light mb-2" />
-              <h4 className="font-medium group-hover:text-accent-light transition-colors">Browse Problems</h4>
-              <p className="text-xs text-gray-500 mt-1">Pick a new challenge</p>
-            </Link>
-            <Link to="/notes" className="p-4 rounded-xl border border-light-border dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-surface/50 transition-colors group">
-              <BookOpen className="w-6 h-6 text-emerald-500 mb-2" />
-              <h4 className="font-medium group-hover:text-emerald-500 transition-colors">Review Notes</h4>
-              <p className="text-xs text-gray-500 mt-1">Check your insights</p>
-            </Link>
+      {/* Advanced Topic and Difficulty Breakdown Visualization */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Topic Breakdown Radar */}
+        <GlassCard hover={false} className="p-6 lg:col-span-2 flex flex-col justify-between">
+          <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <BarChart2 className="w-5 h-5 text-accent-light" /> Topic Strength Breakdown
+          </h3>
+          <div className="h-72 flex items-center justify-center">
+            {topicProgress.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart cx="50%" cy="50%" radius="70%" data={topicProgress}>
+                  <PolarGrid stroke="#888888" strokeWidth={0.5} strokeDasharray="3 3" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#888888', fontSize: 11 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#888888', fontSize: 9 }} />
+                  <Radar name="Solved Strength" dataKey="A" stroke="#6C63FF" fill="#6C63FF" fillOpacity={0.2} />
+                  <Tooltip cursor={{ fill: 'transparent' }} />
+                </RadarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-gray-400 text-sm">Solve questions to populate your strength metrics</div>
+            )}
           </div>
-        </div>
+          <div className="text-center text-xs text-gray-400 mt-4">Metrics reflect percentages solved across catalog topics</div>
+        </GlassCard>
 
-        <div className="card p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-lg">Recent Activity</h3>
-            <Link to="/profile" className="text-sm text-accent-light hover:underline flex items-center">
-              View All <ArrowRight className="w-4 h-4 ml-1" />
+        {/* Difficulty Breakdown Doughnut */}
+        <GlassCard hover={false} className="p-6 flex flex-col justify-between">
+          <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <PieIcon className="w-5 h-5 text-accent-light" /> Difficulty Breakdown
+          </h3>
+          <div className="h-56 flex items-center justify-center">
+            {difficultySplit.some(d => d.value > 0) ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={difficultySplit.filter(d => d.value > 0)}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={70}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {difficultySplit.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip cursor={{ fill: 'transparent' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-gray-400 text-sm text-center flex flex-col items-center gap-2">
+                <Zap className="w-8 h-8 text-amber-500 opacity-40 animate-pulse" />
+                No questions solved yet
+              </div>
+            )}
+          </div>
+          
+          <div className="space-y-2 mt-4 text-xs">
+            {difficultySplit.map((diff, index) => {
+              const percentage = diff.total > 0 ? Math.round((diff.value / diff.total) * 100) : 0;
+              return (
+                <div key={index} className="flex items-center justify-between font-medium">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: diff.color }} />
+                    <span className="text-gray-600 dark:text-gray-400">{diff.name}</span>
+                  </div>
+                  <span className="text-gray-800 dark:text-gray-200">
+                    {diff.value} <span className="text-gray-400 font-normal">/ {diff.total} solved ({percentage}%)</span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </GlassCard>
+
+      </div>
+
+      {/* Quick Actions & Recent Solver Activity Ledger */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Quick Actions Card */}
+        <GlassCard hover={false} className="p-6 flex flex-col justify-between">
+          <div>
+            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6">Quick Navigation</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <Link to="/problems" className="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white/40 dark:bg-white/[0.01] hover:bg-gray-100 dark:hover:bg-dark-surface/50 hover:border-accent-light/35 transition-all group">
+                <Code2 className="w-6 h-6 text-accent-light mb-2 group-hover:scale-110 transition-transform" />
+                <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 group-hover:text-accent-light transition-colors">Problems</h4>
+                <p className="text-[10px] text-gray-500 mt-1">Practice & compile</p>
+              </Link>
+              <Link to="/notes" className="p-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white/40 dark:bg-white/[0.01] hover:bg-gray-100 dark:hover:bg-dark-surface/50 hover:border-emerald-500/35 transition-all group">
+                <BookOpen className="w-6 h-6 text-emerald-500 mb-2 group-hover:scale-110 transition-transform" />
+                <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 group-hover:text-emerald-500 transition-colors">Workspace</h4>
+                <p className="text-[10px] text-gray-500 mt-1">Review sheets</p>
+              </Link>
+            </div>
+          </div>
+          <div className="text-center text-[10px] text-gray-400 mt-4 leading-relaxed">
+            Streaks update every 24 hours. Keep coding consistently to lock streaks!
+          </div>
+        </GlassCard>
+
+        {/* Recent Solves Activity Ledger */}
+        <GlassCard hover={false} className="p-6 lg:col-span-2">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-bold text-lg text-gray-900 dark:text-white">Recent Solver Activity</h3>
+            <Link to="/profile" className="text-sm font-semibold text-accent-light hover:underline inline-flex items-center gap-1">
+              View Activity Profile <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
           {stats.recentActivity.length === 0 ? (
-            <div className="text-center py-6 text-gray-500 text-sm">No activity yet. Start solving!</div>
+            <div className="text-center py-12 text-gray-400 text-sm">
+              No recent activity. Pick a problem and start solving!
+            </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {stats.recentActivity.map((activity, idx) => (
-                <div key={idx} className="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-dark-surface/50">
+                <div key={idx} className="flex justify-between items-center p-4 rounded-xl border border-gray-150 dark:border-gray-850 bg-white/30 dark:bg-white/[0.01]">
                   <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${activity.status === 'solved' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
-                    <span className="font-medium text-sm truncate max-w-[200px]">{getProblemTitle(activity.problemId)}</span>
+                    <div className={`w-2.5 h-2.5 rounded-full ${activity.status === 'solved' ? 'bg-green-500 shadow-md shadow-green-500/25' : 'bg-yellow-500 shadow-md shadow-yellow-500/25'}`} />
+                    <span className="font-semibold text-sm text-gray-800 dark:text-gray-200 truncate max-w-[200px] sm:max-w-md">
+                      {getProblemTitle(activity.problemId)}
+                    </span>
                   </div>
-                  <span className="text-xs text-gray-500">
-                    {new Date(activity.updatedAt).toLocaleDateString()}
+                  <span className="text-xs text-gray-400 font-medium">
+                    {new Date(activity.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                   </span>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </GlassCard>
+
       </div>
 
     </div>
