@@ -204,7 +204,7 @@ export default function Landing() {
         <section id="features" className="py-24 bg-white dark:bg-dark-bg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything You Need to Succeed</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Everything You Need to Succeed</h2>
               <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Stop jumping between multiple platforms. DSAForge provides a unified experience for learning, practicing, and tracking your progress.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -213,7 +213,7 @@ export default function Landing() {
                   <div className="w-12 h-12 rounded-lg bg-accent-light/10 text-accent-light flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{feature.title}</h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">{feature.desc}</p>
                 </div>
               ))}
@@ -224,7 +224,7 @@ export default function Landing() {
         {/* Problem Sheets */}
         <section className="py-24 bg-gray-50 dark:bg-dark-surface/50 border-y border-light-border dark:border-dark-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold mb-12">Integrated Popular DSA Sheets</h2>
+            <h2 className="text-3xl font-bold mb-12 text-gray-900 dark:text-white">Integrated Popular DSA Sheets</h2>
             <div className="flex flex-wrap justify-center gap-6">
               {sheets.map((sheet, i) => (
                 <div key={i} className={`bg-gradient-to-r ${sheet.color} p-[1px] rounded-2xl shadow-lg hover:scale-105 transition-transform cursor-pointer`}>
@@ -242,23 +242,23 @@ export default function Landing() {
         {/* How It Works */}
         <section className="py-24 bg-white dark:bg-dark-bg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold mb-16 text-center">How It Works</h2>
+            <h2 className="text-3xl font-bold mb-16 text-center text-gray-900 dark:text-white">How It Works</h2>
             <div className="relative">
               <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 dark:bg-gray-800 -translate-y-1/2 hidden md:block"></div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
-                <div className="bg-white dark:bg-dark-bg border border-light-border dark:border-dark-border p-8 rounded-2xl text-center shadow-xl">
+                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border p-8 rounded-2xl text-center shadow-xl">
                   <div className="w-16 h-16 rounded-full bg-accent-light text-white flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-accent-light/30">1</div>
-                  <h3 className="text-xl font-bold mb-2">Sign Up</h3>
+                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Sign Up</h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">Register using your KL University email and verify via OTP.</p>
                 </div>
-                <div className="bg-white dark:bg-dark-bg border border-light-border dark:border-dark-border p-8 rounded-2xl text-center shadow-xl">
+                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border p-8 rounded-2xl text-center shadow-xl">
                   <div className="w-16 h-16 rounded-full bg-accent-light text-white flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-accent-light/30">2</div>
-                  <h3 className="text-xl font-bold mb-2">Solve Problems</h3>
+                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Solve Problems</h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">Browse sheets, write Java code, and compile instantly.</p>
                 </div>
-                <div className="bg-white dark:bg-dark-bg border border-light-border dark:border-dark-border p-8 rounded-2xl text-center shadow-xl">
+                <div className="bg-white dark:bg-dark-surface border border-light-border dark:border-dark-border p-8 rounded-2xl text-center shadow-xl">
                   <div className="w-16 h-16 rounded-full bg-accent-light text-white flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg shadow-accent-light/30">3</div>
-                  <h3 className="text-xl font-bold mb-2">Track Progress</h3>
+                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Track Progress</h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">Maintain streaks, view dashboards, and climb the leaderboard.</p>
                 </div>
               </div>
