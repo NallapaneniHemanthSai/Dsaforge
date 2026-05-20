@@ -35,7 +35,8 @@ const protect = async (req, res, next) => {
           '/api/progress/submit',
           '/api/progress/run',
           '/api/auth/logout',
-          '/api/auth/refresh'
+          '/api/auth/refresh',
+          '/api/admin/' // Allow admin demo account to use admin mutations
         ];
         const currentPath = req.originalUrl || req.path;
         const isAllowed = allowedDemoMutations.some(path => currentPath.includes(path));
