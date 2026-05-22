@@ -1,31 +1,105 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Activity, Search, ArrowLeft, RefreshCw, 
-  CheckCircle2, AlertCircle, Clock, Cpu, ChevronLeft, ChevronRight
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Activity, AlertCircle, CheckCircle2, Clock, Code2, Cpu, Eye,
+  RefreshCw, Search, X,
 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import api from '../../api';
 import EmptyState from '../../components/ui/EmptyState';
 import Skeleton from '../../components/ui/Skeleton';
-import { toast } from 'react-hot-toast';
+
+const statusClass = {
+  accepted: 'status-badge-green',
+  wrong_answer: 'status-badge-red',
+  compile_error: 'status-badge-red',
+  runtime_error: 'status-badge-red',
+  time_limit_exceeded: 'status-badge-amber',
+  error: 'status-badge-red',
+};
+
+function SubmissionDrawer({ submission, onClose }) {
+  if (!submission) return null;
+
+  return (
+    <div className="fixed inset-0 z-[80] bg-black/60 p-4 backdrop-blur-sm">
+      <div className="ml-auto flex h-full max-w-3xl flex-col rounded-2xl border border-light-border bg-white shadow-2xl dark:border-dark-border dark:bg-dark-surface">
+        <div className="flex items-center justify-between border-b border-light-border px-5 py-4 dark:border-dark-border">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Submission Details</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{submission.problemId} · {submission.language}</p>
+          </div>
+          <button onClick={onClose} className="pagination-btn" aria-label="Close submission details">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="flex-1 space-y-5 overflow-y-auto p-5">
+          <div className="grid gap-3 sm:grid-cols-4">
+            <div className="card p-4">
+              <div className="text-xs text-gray-500 dark:text-gray-400">Status</div>
+              <div className="mt-2 font-bold capitalize text-gray-900 dark:text-white">{submission.status?.replace('_', ' ')}</div>
+            </div>
+            <div className="card p-4">
+              <div className="text-xs text-gray-500 dark:text-gray-400">Tests</div>
+              <div className="mt-2 font-bold text-gray-900 dark:text-white">{submission.passedCount}/{submission.totalCount}</div>
+            </div>
+            <div className="card p-4">
+              <div className="text-xs text-gray-500 dark:text-gray-400">Runtime</div>
+              <div className="mt-2 font-bold text-gray-900 dark:text-white">{submission.runtime || 0}s</div>
+            </div>
+            <div className="card p-4">
+              <div className="text-xs text-gray-500 dark:text-gray-400">Memory</div>
+              <div className="mt-2 font-bold text-gray-900 dark:text-white">{submission.memory || 0} KB</div>
+            </div>
+          </div>
+
+          <section>
+            <h3 className="mb-2 text-sm font-bold text-gray-900 dark:text-white">Submitted Code</h3>
+            <pre className="max-h-80 overflow-auto rounded-xl border border-light-border bg-gray-950 p-4 text-xs text-gray-100 dark:border-dark-border">
+              <code>{submission.code || 'Code not available in list response.'}</code>
+            </pre>
+          </section>
+
+          <section>
+            <h3 className="mb-2 text-sm font-bold text-gray-900 dark:text-white">Test Results</h3>
+            <div className="space-y-3">
+              {(submission.testResults || []).length === 0 ? (
+                <p className="text-sm text-gray-500 dark:text-gray-400">Open a saved submission detail endpoint to view full per-test output.</p>
+              ) : submission.testResults.map((result, index) => (
+                <div key={index} className="rounded-xl border border-light-border p-4 dark:border-dark-border">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className={`status-badge ${result.passed ? 'status-badge-green' : 'status-badge-red'}`}>
+                      {result.passed ? <CheckCircle2 className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+                      Test {index + 1}
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{result.runtime || 0}s · {result.memory || 0} KB</span>
+                  </div>
+                  <pre className="overflow-auto rounded-lg bg-gray-100 p-3 text-xs text-gray-800 dark:bg-dark-bg dark:text-gray-200">{result.errorOutput || result.actualOutput || 'No output'}</pre>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminSubmissions() {
   const [submissions, setSubmissions] = useState([]);
   const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('all');
+  const [language, setLanguage] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(null);
 
-  // We'll mock pagination for this view since the API might not support it yet
   const fetchSubmissions = async () => {
     try {
       setLoading(true);
-      // Let's assume we can fetch recent submissions from a new endpoint. 
-      // If the backend doesn't have it, we could add it to adminController or use a dummy for now.
-      // Wait, we didn't add an admin route for all submissions yet. Let me add it in the backend too.
       const { data } = await api.get('/admin/submissions');
-      setSubmissions(data.data);
+      setSubmissions(data.data || []);
     } catch (err) {
       toast.error('Failed to load global submissions');
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -35,95 +109,117 @@ export default function AdminSubmissions() {
     fetchSubmissions();
   }, []);
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return submissions.filter((submission) => {
+      const matchesSearch = !q || [
+        submission.problemId,
+        submission.user?.name,
+        submission.user?.email,
+        submission.status,
+        submission.language,
+      ].some((value) => String(value || '').toLowerCase().includes(q));
+      const matchesStatus = status === 'all' || submission.status === status;
+      const matchesLanguage = language === 'all' || submission.language === language;
+      return matchesSearch && matchesStatus && matchesLanguage;
+    });
+  }, [submissions, search, status, language]);
+
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-light-border dark:border-dark-border pb-4">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col gap-4 border-b border-light-border pb-5 dark:border-dark-border lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <Link to="/admin/dashboard" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1 mb-2">
-            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-          </Link>
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
-            <Activity className="w-8 h-8 text-primary" /> Global Submissions
+          <p className="text-xs font-bold uppercase tracking-wider text-primary">Admin Suite</p>
+          <h1 className="mt-1 flex items-center gap-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+            <Activity className="h-8 w-8 text-primary" /> Submission Monitor
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Monitor real-time code executions across the platform. Total tracked: {submissions.length}
-          </p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Audit code submissions, failures, language usage, and performance signals.</p>
         </div>
-        <button
-          onClick={fetchSubmissions}
-          className="group p-2.5 self-start sm:self-auto rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-dark-surface hover:bg-gray-50 dark:hover:bg-dark-surface/80 transition-all flex items-center gap-2"
-        >
-          <RefreshCw className="w-5 h-5 text-gray-500 group-hover:rotate-180 transition-transform duration-500" />
+        <button onClick={fetchSubmissions} className="btn-secondary inline-flex items-center gap-2 self-start lg:self-auto">
+          <RefreshCw className="h-4 w-4" /> Refresh
         </button>
       </div>
 
-      {/* Directory Content */}
-      {loading ? (
-        <div className="space-y-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-20 w-full" />
-          ))}
-        </div>
-      ) : submissions.length === 0 ? (
-        <EmptyState
-          icon={Activity}
-          title="No submissions found"
-          description={"No code has been executed yet."}
-        />
-      ) : (
-        <div className="space-y-4">
-          <div className="overflow-x-auto rounded-2xl border border-gray-200/60 dark:border-white/[0.08] bg-white/60 dark:bg-white/[0.02] backdrop-blur-xl">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-              <thead className="bg-gray-50/50 dark:bg-dark-bg/20">
-                <tr>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Time</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Problem</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Language</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Performance</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-                {submissions.map(s => (
-                  <tr key={s._id} className="hover:bg-gray-50/40 dark:hover:bg-white/[0.01]">
-                    <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400 font-mono">
-                      {new Date(s.createdAt).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-xs font-semibold">
-                      {s.user?.name || 'Unknown User'}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-xs font-semibold text-primary">
-                      {s.problemId}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-xs">
-                      <span className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-mono">{s.language}</span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-xs">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider border ${
-                        s.status === 'accepted' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/10 dark:text-green-400 dark:border-green-800' : 
-                        s.status === 'wrong_answer' ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/10 dark:text-red-400 dark:border-red-800' :
-                        s.status === 'compile_error' || s.status === 'runtime_error' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/10 dark:text-amber-400 dark:border-amber-800' :
-                        'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700'
-                      }`}>
-                        {s.status === 'accepted' ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
-                        {s.status.replace('_', ' ')}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
-                      <div className="flex gap-3 text-xs">
-                        <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {s.runtime}s</span>
-                        <span className="flex items-center gap-1"><Cpu className="w-3.5 h-3.5" /> {s.memory} KB</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="card p-4">
+        <div className="grid gap-3 lg:grid-cols-[1fr_190px_170px]">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input className="input-field pl-10" placeholder="Search user, problem, status, or language" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
+          <select className="input-field" value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="all">All statuses</option>
+            <option value="accepted">Accepted</option>
+            <option value="wrong_answer">Wrong answer</option>
+            <option value="compile_error">Compile error</option>
+            <option value="runtime_error">Runtime error</option>
+            <option value="time_limit_exceeded">Time limit</option>
+            <option value="error">Error</option>
+          </select>
+          <select className="input-field" value={language} onChange={(e) => setLanguage(e.target.value)}>
+            <option value="all">All languages</option>
+            <option value="java">Java</option>
+            <option value="python">Python</option>
+            <option value="cpp">C++</option>
+          </select>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="space-y-4">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}</div>
+      ) : filtered.length === 0 ? (
+        <EmptyState icon={Code2} title="No submissions found" description="Submissions will appear here after students submit code through the Judge0 flow." />
+      ) : (
+        <div className="admin-table-shell">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Problem</th>
+                <th>Language</th>
+                <th>Status</th>
+                <th>Performance</th>
+                <th className="text-right">View</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((submission) => (
+                <tr key={submission._id}>
+                  <td className="whitespace-nowrap font-mono text-xs text-gray-500 dark:text-gray-400">{new Date(submission.createdAt).toLocaleString()}</td>
+                  <td>
+                    <div className="font-semibold text-gray-900 dark:text-white">{submission.user?.name || 'Unknown user'}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{submission.user?.email || 'No email'}</div>
+                  </td>
+                  <td className="font-mono text-xs text-primary">{submission.problemId}</td>
+                  <td><span className="topic-pill font-mono">{submission.language}</span></td>
+                  <td>
+                    <span className={`status-badge ${statusClass[submission.status] || 'status-badge-blue'}`}>
+                      {submission.status === 'accepted' ? <CheckCircle2 className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+                      {submission.status?.replace('_', ' ')}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-400">
+                      <span>{submission.passedCount}/{submission.totalCount} tests</span>
+                      <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {submission.runtime || 0}s</span>
+                      <span className="inline-flex items-center gap-1"><Cpu className="h-3.5 w-3.5" /> {submission.memory || 0} KB</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex justify-end">
+                      <button onClick={() => setSelected(submission)} className="pagination-btn" aria-label="View submission">
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
+
+      <SubmissionDrawer submission={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

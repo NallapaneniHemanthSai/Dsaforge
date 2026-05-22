@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Code2, BookOpen, Trophy, User, Settings, LogOut, ChevronLeft, ChevronRight, Zap, Terminal } from 'lucide-react';
+import {
+  LayoutDashboard, Code2, BookOpen, Trophy, User, Settings, LogOut,
+  ChevronLeft, ChevronRight, Terminal, Shield, Users, Database, Activity,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from './Navbar';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
@@ -19,6 +22,14 @@ const Sidebar = () => {
   const bottomItems = [
     { name: 'Profile', path: '/profile', icon: <User size={20} /> },
     { name: 'Settings', path: '/settings', icon: <Settings size={20} /> },
+  ];
+
+  const adminItems = [
+    { name: 'Admin Home', path: '/admin/dashboard', icon: <Shield size={20} /> },
+    { name: 'Users', path: '/admin/users', icon: <Users size={20} /> },
+    { name: 'Problems', path: '/admin/problems', icon: <Database size={20} /> },
+    { name: 'Submissions', path: '/admin/submissions', icon: <Code2 size={20} /> },
+    { name: 'Analytics', path: '/admin/analytics', icon: <Activity size={20} /> },
   ];
 
   const NavItem = ({ item }) => (
@@ -52,6 +63,18 @@ const Sidebar = () => {
       {/* Main Nav */}
       <div className="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => <NavItem key={item.path} item={item} />)}
+        {user?.role === 'admin' && (
+          <div className="pt-5 mt-5 border-t border-light-border dark:border-dark-border">
+            {!collapsed && (
+              <p className="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                Admin
+              </p>
+            )}
+            <div className="space-y-1">
+              {adminItems.map((item) => <NavItem key={item.path} item={item} />)}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Nav */}

@@ -11,12 +11,11 @@ import Footer from '../components/Footer';
 import GlassCard from '../components/ui/GlassCard';
 import useCountUp from '../hooks/useCountUp';
 
-/* ── Floating Orbs Background ── */
+/* ── Subtle Page Background ── */
 const FloatingOrbs = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
-    <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-primary/10 dark:bg-primary/5 blur-[120px] animate-pulse" />
-    <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-secondary/10 dark:bg-secondary/5 blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-primary/5 blur-[80px] animate-pulse" style={{ animationDelay: '4s' }} />
+    <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(99,102,241,0.08),transparent_38%,rgba(6,182,212,0.05))] dark:bg-[linear-gradient(to_bottom,rgba(99,102,241,0.12),rgba(9,9,11,0)_42%,rgba(6,182,212,0.06))]" />
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55),transparent_36%)] dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_34%)]" />
   </div>
 );
 
@@ -41,7 +40,7 @@ const HeroSection = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
-    <section ref={ref} className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20 pb-16">
+    <section ref={ref} className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-light-bg pt-20 pb-16 dark:bg-dark-bg">
       <FloatingOrbs />
       <motion.div style={{ y, opacity }} className="relative z-10 max-w-5xl mx-auto px-4 text-center">
         <motion.div
@@ -190,7 +189,7 @@ const features = [
 ];
 
 const FeaturesSection = () => (
-  <section id="features" className="relative py-24 bg-white dark:bg-dark-bg">
+  <section id="features" className="relative py-24 bg-light-bg dark:bg-dark-bg">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -230,7 +229,7 @@ const whyItems = [
 ];
 
 const WhySection = () => (
-  <section className="py-24 bg-gray-50 dark:bg-dark-surface/30 border-y border-light-border dark:border-dark-border">
+  <section className="py-24 bg-gray-100/70 dark:bg-[#0d0f14] border-y border-light-border dark:border-dark-border">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -270,7 +269,7 @@ const sheets = [
 ];
 
 const SheetsSection = () => (
-  <section className="py-24 bg-white dark:bg-dark-bg">
+  <section className="py-24 bg-light-bg dark:bg-dark-bg">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -326,7 +325,7 @@ const steps = [
 ];
 
 const HowItWorks = () => (
-  <section className="py-24 bg-gray-50 dark:bg-dark-surface/30 border-y border-light-border dark:border-dark-border">
+  <section className="py-24 bg-gray-100/70 dark:bg-[#0d0f14] border-y border-light-border dark:border-dark-border">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -356,7 +355,7 @@ const HowItWorks = () => (
 
 /* ── CTA Section ── */
 const CTASection = () => (
-  <section className="py-24 bg-white dark:bg-dark-bg relative overflow-hidden">
+  <section className="py-24 bg-light-bg dark:bg-dark-bg relative overflow-hidden">
     <FloatingOrbs />
     <div className="relative z-10 max-w-3xl mx-auto px-4 text-center">
       <motion.div
@@ -386,9 +385,9 @@ const CTASection = () => (
 /* ── Main Landing Page ── */
 export default function Landing() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-light-bg text-gray-900 dark:bg-dark-bg dark:text-gray-100">
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 bg-light-bg dark:bg-dark-bg">
         <HeroSection />
         <FeaturesSection />
         <SheetsSection />

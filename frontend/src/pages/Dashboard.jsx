@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   CheckCircle2, RotateCw, ListTodo, Target, Flame, 
-  ArrowRight, Code2, BookOpen, BarChart2, PieChart as PieIcon, Award, Zap
+  ArrowRight, Code2, BookOpen, BarChart2, PieChart as PieIcon, Award, Zap, AlertCircle
 } from 'lucide-react';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { useAuth } from '../context/AuthContext';
