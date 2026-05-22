@@ -7,7 +7,6 @@ import {
 import { toast } from 'react-hot-toast';
 import api from '../api';
 import {
-  problems as allProblems,
   sheets,
   getTopicsForSheet,
   getSheetCounts,
@@ -72,6 +71,7 @@ export default function Problems() {
   const [collapsed, setCollapsed] = useState({});
   const [progress, setProgress] = useState({});
   const [loading, setLoading] = useState(true);
+  const [apiProblems, setApiProblems] = useState([]);
 
   const sheetCounts = useMemo(() => getSheetCounts(), []);
   const sheetMeta = activeSheet !== 'all' ? getSheetById(activeSheet) : null;
@@ -79,12 +79,19 @@ export default function Problems() {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await api.get('/progress');
+        setLoading(true);
+        const [progressRes, problemsRes] = await Promise.all([
+          api.get('/progress'),
+          api.get('/problems')
+        ]);
+        
         const map = {};
-        data.progress.forEach((p) => { map[p.problemId] = p; });
+        progressRes.data.progress.forEach((p) => { map[p.problemId] = p; });
         setProgress(map);
+        setApiProblems(problemsRes.data.data || []);
       } catch (e) {
         console.error(e);
+        toast.error('Failed to load problems');
       } finally {
         setLoading(false);
       }
@@ -115,7 +122,7 @@ export default function Problems() {
     }
   };
 
-  const filtered = useMemo(() => allProblems.filter((p) => {
+  const filtered = useMemo(() => apiProblems.filter((p) => {
     if (activeSheet !== 'all' && p.sheet !== activeSheet) return false;
     if (search && !p.title.toLowerCase().includes(search.toLowerCase())) return false;
     if (topicFilter !== 'all' && p.topic !== topicFilter) return false;
@@ -124,7 +131,7 @@ export default function Problems() {
     if (statusFilter !== 'all' && st !== statusFilter) return false;
     if (bookmarkedOnly && !progress[p.id]?.bookmarked) return false;
     return true;
-  }), [activeSheet, search, topicFilter, difficultyFilter, statusFilter, bookmarkedOnly, progress]);
+  }), [apiProblems, activeSheet, search, topicFilter, difficultyFilter, statusFilter, bookmarkedOnly, progress]);
 
   const sectionMode = !search && topicFilter === 'all' && statusFilter === 'all' && !bookmarkedOnly && difficultyFilter === 'all';
 
@@ -153,10 +160,10 @@ export default function Problems() {
   }, [filtered, progress]);
 
   const globalSolved = useMemo(
-    () => allProblems.filter((p) => progress[p.id]?.status === 'solved').length,
-    [progress],
+    () => apiProblems.filter((p) => progress[p.id]?.status === 'solved').length,
+    [apiProblems, progress],
   );
-  const pct = Math.round((globalSolved / TOTAL_PROBLEMS) * 100);
+  const pct = apiProblems.length ? Math.round((globalSolved / apiProblems.length) * 100) : 0;
 
   useEffect(() => { setPage(1); }, [activeSheet, search, topicFilter, difficultyFilter, statusFilter, bookmarkedOnly]);
 
@@ -230,7 +237,7 @@ export default function Problems() {
             </div>
             <div className="text-sm">
               <p><strong className="text-emerald-500">{globalSolved}</strong> solved</p>
-              <p><strong>{TOTAL_PROBLEMS - globalSolved}</strong> remaining</p>
+              <p><strong>{Math.max(0, apiProblems.length - globalSolved)}</strong> remaining</p>
             </div>
           </div>
         </div>

@@ -23,10 +23,11 @@ import Playground from './pages/Playground';
 import PlaygroundEditor from './pages/PlaygroundEditor';
 import NotFound from './pages/NotFound';
 
-// Admin Components
 import AdminRoute from './components/AdminRoute';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminProblems from './pages/admin/AdminProblems';
+import AdminSubmissions from './pages/admin/AdminSubmissions';
 
 function App() {
   return (
@@ -80,6 +81,8 @@ function App() {
                 <Route element={<AdminRoute />}>
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/admin/users" element={<AdminUsers />} />
+                  <Route path="/admin/problems" element={<AdminProblems />} />
+                  <Route path="/admin/submissions" element={<AdminSubmissions />} />
                 </Route>
               </Route>
             </Route>
