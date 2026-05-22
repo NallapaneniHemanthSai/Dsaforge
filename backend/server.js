@@ -51,6 +51,7 @@ app.use('/api/notes', require('./routes/notes'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/stats', require('./routes/stats'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/programs', require('./routes/programs'));
 
 app.get('/', (req, res) => {
   res.send('DSAForge Backend Running 🚀');
