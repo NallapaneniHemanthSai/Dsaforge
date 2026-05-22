@@ -116,7 +116,7 @@ export default function Layout() {
                     <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
                       {isDemoStudent(user)
                         ? 'Read-only recruiter preview is active. You can explore the product, but saves and destructive changes are disabled.'
-                        : 'Admin demo is active. You can inspect the full dashboard and admin workflows with seeded preview data.'}
+                        : 'Read-only admin preview is active. Recruiters can inspect every admin feature, but create, edit, suspend, and delete actions are disabled.'}
                     </p>
                   </div>
                 </div>
