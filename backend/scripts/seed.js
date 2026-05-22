@@ -5,6 +5,9 @@ const Progress = require('../models/Progress');
 const Notes = require('../models/Notes');
 const { ROLES } = require('../constants/roles');
 
+const DEMO_STUDENT_PASSWORD = 'Demo@123';
+const DEMO_ADMIN_PASSWORD = 'Admin@123';
+
 const seedDemoAccounts = async () => {
   try {
     console.log('🌱 Seeding demo accounts...');
@@ -18,7 +21,7 @@ const seedDemoAccounts = async () => {
         name: 'Demo Student',
         username: 'demostudent',
         email: demoStudentEmail,
-        password: 'demo123',
+        password: DEMO_STUDENT_PASSWORD,
         isVerified: true,
         role: ROLES.USER,
         bio: 'Placement Prep Demo Account'
@@ -26,6 +29,21 @@ const seedDemoAccounts = async () => {
       await demoStudent.save();
       console.log('✅ Created Demo Student');
     } else {
+      let shouldSave = false;
+      const passwordMatches = await demoStudent.comparePassword(DEMO_STUDENT_PASSWORD);
+      if (!passwordMatches) {
+        demoStudent.password = DEMO_STUDENT_PASSWORD;
+        shouldSave = true;
+      }
+      if (!demoStudent.isVerified) {
+        demoStudent.isVerified = true;
+        shouldSave = true;
+      }
+      if (demoStudent.role !== ROLES.USER) {
+        demoStudent.role = ROLES.USER;
+        shouldSave = true;
+      }
+      if (shouldSave) await demoStudent.save();
       console.log('ℹ️ Demo Student already exists');
     }
 
@@ -64,7 +82,7 @@ const seedDemoAccounts = async () => {
         name: 'System Admin',
         username: 'admin',
         email: demoAdminEmail,
-        password: 'admin123',
+        password: DEMO_ADMIN_PASSWORD,
         isVerified: true,
         role: ROLES.ADMIN,
         bio: 'DSAForge Platform Administrator'
@@ -72,6 +90,21 @@ const seedDemoAccounts = async () => {
       await demoAdmin.save();
       console.log('✅ Created Demo Admin');
     } else {
+      let shouldSave = false;
+      const passwordMatches = await demoAdmin.comparePassword(DEMO_ADMIN_PASSWORD);
+      if (!passwordMatches) {
+        demoAdmin.password = DEMO_ADMIN_PASSWORD;
+        shouldSave = true;
+      }
+      if (!demoAdmin.isVerified) {
+        demoAdmin.isVerified = true;
+        shouldSave = true;
+      }
+      if (demoAdmin.role !== ROLES.ADMIN) {
+        demoAdmin.role = ROLES.ADMIN;
+        shouldSave = true;
+      }
+      if (shouldSave) await demoAdmin.save();
       console.log('ℹ️ Demo Admin already exists');
     }
 
