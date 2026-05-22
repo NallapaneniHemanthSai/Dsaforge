@@ -47,6 +47,8 @@ app.use(cookieParser());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/user', require('./routes/user'));
 app.use('/api/progress', require('./routes/progress'));
+app.use('/api/problems', require('./routes/problems'));
+app.use('/api/submissions', require('./routes/submissions'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/stats', require('./routes/stats'));

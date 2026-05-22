@@ -2,14 +2,47 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Progress = require('../models/Progress');
+const Submission = require('../models/Submission');
 const { protect } = require('../middleware/auth');
 const { requireAdmin } = require('../middleware/admin');
 const { success, error, paginated } = require('../utils/responseEnvelope');
 const { parsePagination } = require('../utils/pagination');
 
+// Import Admin Problem Controller
+const {
+  getAdminProblems,
+  getAdminProblem,
+  createProblem,
+  updateProblem,
+  deleteProblem,
+  importProblems
+} = require('../controllers/adminProblemController');
+
 // Apply auth and admin protections to all admin routes
 router.use(protect);
 router.use(requireAdmin);
+
+// ─── PROBLEM MANAGEMENT ──────────────────────────────────────────────
+router.get('/problems', getAdminProblems);
+router.post('/problems', createProblem);
+router.post('/problems/import', importProblems);
+router.get('/problems/:id', getAdminProblem);
+router.patch('/problems/:id', updateProblem);
+router.delete('/problems/:id', deleteProblem);
+
+// ─── SUBMISSION MANAGEMENT ───────────────────────────────────────────
+router.get('/submissions', async (req, res, next) => {
+  try {
+    const submissions = await Submission.find()
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(100);
+      
+    return success(res, { data: submissions, message: 'Recent submissions retrieved' });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // ─── GET USERS LIST (PAGINATED) ───────────────────────────────────────
 router.get('/users', async (req, res, next) => {
@@ -124,6 +157,11 @@ router.get('/analytics', async (req, res, next) => {
       }
     });
 
+    const totalSubmissions = await Submission.countDocuments();
+    const acceptedSubmissions = await Submission.countDocuments({ status: 'accepted' });
+    const activeProblems = await require('../models/Problem').countDocuments({ isActive: true });
+    const totalProblems = await require('../models/Problem').countDocuments();
+
     return success(res, {
       data: {
         users: {
@@ -132,7 +170,16 @@ router.get('/analytics', async (req, res, next) => {
           verified: verifiedUsers,
           suspended: totalUsers - activeUsers
         },
-        problems: problemStats
+        problems: {
+          ...problemStats,
+          total: totalProblems,
+          active: activeProblems
+        },
+        submissions: {
+          total: totalSubmissions,
+          accepted: acceptedSubmissions,
+          acceptanceRate: totalSubmissions ? (acceptedSubmissions / totalSubmissions * 100).toFixed(2) + '%' : '0%'
+        }
       },
       message: 'System analytics retrieved successfully'
     });

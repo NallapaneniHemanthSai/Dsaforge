@@ -64,6 +64,9 @@ const env = {
   frontendUrl: getEnv('FRONTEND_URL', 'http://localhost:5175'),
   gmailUser: getEnv('GMAIL_USER'),
   gmailAppPassword: getEnv('GMAIL_APP_PASSWORD'),
+  judge0ApiUrl: getEnv('JUDGE0_API_URL', 'https://judge0-ce.p.rapidapi.com'),
+  judge0ApiKey: getEnv('JUDGE0_API_KEY'),
+  judge0ApiHost: getEnv('JUDGE0_API_HOST', 'judge0-ce.p.rapidapi.com'),
   isProduction: getEnv('NODE_ENV', 'development') === 'production',
 };
 
