@@ -3,9 +3,10 @@
  * Keeps the demo accounts clean and prevents spam/abuse.
  */
 const restrictDemoUser = (req, res, next) => {
-  const demoEmails = ['demo@kluniversity.in', 'admin@kluniversity.in'];
+  const isDemoStudent = req.user?.email === 'demo@kluniversity.in';
+  const isDemoAdmin = req.user?.email === 'admin@kluniversity.in';
   
-  if (req.user && demoEmails.includes(req.user.email)) {
+  if (req.user && (isDemoStudent || isDemoAdmin)) {
     // Check if the request is a write operation (POST/PUT/PATCH/DELETE)
     // We allow running/submitting code or fetching notes, but block user mutations like password changes, profile deletion, etc.
     const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
@@ -15,11 +16,13 @@ const restrictDemoUser = (req, res, next) => {
     // - Requesting new tokens
     // We block:
     // - Changing passwords, updating profile info, deleting accounts
-    const allowedDemoMutations = [
-      '/api/progress/submit',
-      '/api/progress/run',
+    const allowedDemoMutations = isDemoAdmin ? [
       '/api/auth/logout',
-      '/api/auth/refresh'
+      '/api/auth/refresh',
+      '/api/admin/',
+    ] : [
+      '/api/auth/logout',
+      '/api/auth/refresh',
     ];
 
     const currentPath = req.originalUrl || req.path;
