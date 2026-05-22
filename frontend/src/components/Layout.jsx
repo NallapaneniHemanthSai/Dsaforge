@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Code2, BookOpen, Trophy, User, Settings, LogOut, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
+import { LayoutDashboard, Code2, BookOpen, Trophy, User, Settings, LogOut, ChevronLeft, ChevronRight, Zap, Terminal } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from './Navbar';
 
@@ -12,6 +12,7 @@ const Sidebar = () => {
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Problems', path: '/problems', icon: <Code2 size={20} /> },
     { name: 'Notes', path: '/notes', icon: <BookOpen size={20} /> },
+    { name: 'Playground', path: '/playground', icon: <Terminal size={20} /> },
     { name: 'Leaderboard', path: '/leaderboard', icon: <Trophy size={20} /> },
   ];
 
