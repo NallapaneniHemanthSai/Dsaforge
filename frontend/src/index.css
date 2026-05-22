@@ -16,6 +16,33 @@
 
   body.dark {
     @apply bg-dark-bg text-gray-100;
+    color-scheme: dark;
+  }
+
+  .dark #root {
+    @apply bg-dark-bg text-gray-100;
+  }
+
+  .dark input,
+  .dark textarea,
+  .dark select {
+    @apply text-gray-100 placeholder:text-gray-500;
+  }
+
+  .dark option {
+    @apply bg-dark-surface text-gray-100;
+  }
+
+  .dark table {
+    @apply text-gray-200;
+  }
+
+  .dark th {
+    @apply text-gray-400;
+  }
+
+  .dark td {
+    @apply text-gray-200;
   }
 }
 
@@ -29,11 +56,11 @@
   }
 
   .card {
-    @apply bg-white border border-light-border rounded-xl shadow-sm transition-all duration-200;
+    @apply bg-white text-gray-900 border border-light-border rounded-xl shadow-sm transition-all duration-200;
   }
 
   .dark .card {
-    @apply bg-dark-surface border-dark-border shadow-none;
+    @apply bg-dark-surface text-gray-100 border-dark-border shadow-none;
   }
 
   .btn-primary {
@@ -57,7 +84,75 @@
   }
 
   .dark .input-field {
-    @apply bg-dark-bg border-gray-700 text-white focus:ring-primary-hover;
+    @apply bg-dark-bg border-gray-700 text-gray-100 placeholder:text-gray-500 focus:ring-primary-hover;
+  }
+
+  .admin-table-shell {
+    @apply overflow-x-auto rounded-2xl border border-light-border bg-white/80 shadow-sm;
+  }
+
+  .dark .admin-table-shell {
+    @apply border-dark-border bg-dark-surface/80 shadow-none;
+  }
+
+  .admin-table {
+    @apply min-w-full divide-y divide-gray-200;
+  }
+
+  .dark .admin-table {
+    @apply divide-gray-800;
+  }
+
+  .admin-table thead {
+    @apply bg-gray-50/90;
+  }
+
+  .dark .admin-table thead {
+    @apply bg-dark-bg/70;
+  }
+
+  .admin-table th {
+    @apply px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500;
+  }
+
+  .admin-table td {
+    @apply px-5 py-4 text-sm text-gray-700;
+  }
+
+  .dark .admin-table td {
+    @apply text-gray-200;
+  }
+
+  .admin-table tbody tr {
+    @apply border-b border-gray-100 transition-colors last:border-0 hover:bg-gray-50/80;
+  }
+
+  .dark .admin-table tbody tr {
+    @apply border-gray-800 hover:bg-white/[0.03];
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold;
+  }
+
+  .status-badge-green {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300;
+  }
+
+  .status-badge-amber {
+    @apply border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300;
+  }
+
+  .status-badge-red {
+    @apply border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300;
+  }
+
+  .status-badge-blue {
+    @apply border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/40 dark:text-blue-300;
+  }
+
+  .muted-text {
+    @apply text-gray-500 dark:text-gray-400;
   }
 
   .page-hero {

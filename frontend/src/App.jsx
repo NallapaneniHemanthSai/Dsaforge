@@ -28,6 +28,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminProblems from './pages/admin/AdminProblems';
 import AdminSubmissions from './pages/admin/AdminSubmissions';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
 
 function App() {
   return (
@@ -83,6 +84,7 @@ function App() {
                   <Route path="/admin/users" element={<AdminUsers />} />
                   <Route path="/admin/problems" element={<AdminProblems />} />
                   <Route path="/admin/submissions" element={<AdminSubmissions />} />
+                  <Route path="/admin/analytics" element={<AdminAnalytics />} />
                 </Route>
               </Route>
             </Route>

@@ -40,7 +40,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           
-          <Link to="/" className="flex items-center space-x-2 group">
+          <Link to="/" className="flex items-center space-x-2 group text-gray-950 dark:text-white">
             <Zap className="h-6 w-6 text-primary group-hover:text-primary-hover transition-colors" />
             <span className="text-xl font-bold tracking-tight">DSAForge</span>
           </Link>
@@ -62,7 +62,7 @@ export default function Navbar() {
             <div className="flex items-center space-x-4 border-l border-gray-200 dark:border-gray-700 pl-4">
               <button
                 onClick={() => changeTheme(activeTheme === 'dark' ? 'light' : 'dark')}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-full text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800 transition-colors"
                 aria-label="Toggle Theme"
               >
                 {activeTheme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -76,13 +76,13 @@ export default function Navbar() {
                     </div>
                   </button>
                   {/* Dropdown */}
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-surface rounded-xl shadow-lg border border-light-border dark:border-dark-border py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all transform origin-top-right">
+                    <div className="absolute right-0 mt-2 w-48 bg-white text-gray-900 dark:bg-dark-surface dark:text-gray-100 rounded-xl shadow-lg border border-light-border dark:border-dark-border py-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all transform origin-top-right">
                     <div className="px-4 py-2 border-b border-light-border dark:border-dark-border">
                       <p className="text-sm font-medium truncate">{user.name}</p>
                       <p className="text-xs text-gray-500 truncate">@{user.username}</p>
                     </div>
                     {user?.role === 'admin' && (
-                      <Link to="/admin/dashboard" className="block px-4 py-2 text-sm text-purple-600 dark:text-purple-450 hover:bg-purple-50 dark:hover:bg-purple-950/20 font-semibold transition-colors">Admin Panel</Link>
+                      <Link to="/admin/dashboard" className="block px-4 py-2 text-sm text-purple-600 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/20 font-semibold transition-colors">Admin Panel</Link>
                     )}
                     <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Profile</Link>
                     <Link to="/settings" className="block px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Settings</Link>
