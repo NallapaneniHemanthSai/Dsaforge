@@ -7,6 +7,8 @@ import { toast } from 'react-hot-toast';
 import api from '../../api';
 import EmptyState from '../../components/ui/EmptyState';
 import Skeleton from '../../components/ui/Skeleton';
+import { useAuth } from '../../context/AuthContext';
+import { isDemoAdmin } from '../../utils/demoMode';
 
 const emptyForm = {
   title: '',
@@ -50,13 +52,17 @@ const problemToForm = (problem) => ({
   isActive: problem.isActive !== false,
 });
 
-function ProblemModal({ problem, onClose, onSaved }) {
+function ProblemModal({ problem, onClose, onSaved, readOnlyPreview = false }) {
   const [form, setForm] = useState(problem ? problemToForm(problem) : emptyForm);
   const [saving, setSaving] = useState(false);
 
   const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
 
   const save = async () => {
+    if (readOnlyPreview) {
+      toast('Admin Demo is read-only. Problem changes are disabled for recruiter previews.');
+      return;
+    }
     if (!form.title.trim() || !form.id.trim() || !form.topic.trim() || !form.description.trim()) {
       toast.error('Title, ID, topic, and description are required');
       return;
@@ -111,29 +117,29 @@ function ProblemModal({ problem, onClose, onSaved }) {
         <div className="grid gap-5 p-5 lg:grid-cols-2">
           <section className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Basic Info</h3>
-            <input className="input-field" placeholder="Problem title" value={form.title} onChange={(e) => update('title', e.target.value)} />
-            <input className="input-field font-mono text-sm" placeholder="stable-id-like-two-sum" value={form.id} onChange={(e) => update('id', e.target.value)} disabled={Boolean(problem)} />
+            <input className="input-field" placeholder="Problem title" value={form.title} onChange={(e) => update('title', e.target.value)} readOnly={readOnlyPreview} />
+            <input className="input-field font-mono text-sm" placeholder="stable-id-like-two-sum" value={form.id} onChange={(e) => update('id', e.target.value)} disabled={Boolean(problem) || readOnlyPreview} />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <input className="input-field" placeholder="Sheet" value={form.sheet} onChange={(e) => update('sheet', e.target.value)} />
-              <input className="input-field" placeholder="Section" value={form.section} onChange={(e) => update('section', e.target.value)} />
-              <input className="input-field" placeholder="Topic" value={form.topic} onChange={(e) => update('topic', e.target.value)} />
-              <select className="input-field" value={form.difficulty} onChange={(e) => update('difficulty', e.target.value)}>
+              <input className="input-field" placeholder="Sheet" value={form.sheet} onChange={(e) => update('sheet', e.target.value)} readOnly={readOnlyPreview} />
+              <input className="input-field" placeholder="Section" value={form.section} onChange={(e) => update('section', e.target.value)} readOnly={readOnlyPreview} />
+              <input className="input-field" placeholder="Topic" value={form.topic} onChange={(e) => update('topic', e.target.value)} readOnly={readOnlyPreview} />
+              <select className="input-field" value={form.difficulty} onChange={(e) => update('difficulty', e.target.value)} disabled={readOnlyPreview}>
                 <option>Easy</option>
                 <option>Medium</option>
                 <option>Hard</option>
               </select>
             </div>
-            <input className="input-field" placeholder="External problem link" value={form.externalLink} onChange={(e) => update('externalLink', e.target.value)} />
+            <input className="input-field" placeholder="External problem link" value={form.externalLink} onChange={(e) => update('externalLink', e.target.value)} readOnly={readOnlyPreview} />
             <label className="flex items-center gap-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
-              <input type="checkbox" checked={form.isActive} onChange={(e) => update('isActive', e.target.checked)} />
+              <input type="checkbox" checked={form.isActive} onChange={(e) => update('isActive', e.target.checked)} disabled={readOnlyPreview} />
               Active and visible to students
             </label>
           </section>
 
           <section className="space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Statement</h3>
-            <textarea className="input-field min-h-40" placeholder="Problem description" value={form.description} onChange={(e) => update('description', e.target.value)} />
-            <textarea className="input-field min-h-28" placeholder="Constraints, one per line" value={form.constraintsText} onChange={(e) => update('constraintsText', e.target.value)} />
+            <textarea className="input-field min-h-40" placeholder="Problem description" value={form.description} onChange={(e) => update('description', e.target.value)} readOnly={readOnlyPreview} />
+            <textarea className="input-field min-h-28" placeholder="Constraints, one per line" value={form.constraintsText} onChange={(e) => update('constraintsText', e.target.value)} readOnly={readOnlyPreview} />
           </section>
 
           <section className="space-y-4 lg:col-span-2">
@@ -141,15 +147,15 @@ function ProblemModal({ problem, onClose, onSaved }) {
             <div className="grid gap-4 lg:grid-cols-3">
               <label className="block">
                 <span className="mb-2 block text-xs font-semibold text-gray-500 dark:text-gray-400">Examples JSON</span>
-                <textarea className="input-field min-h-56 font-mono text-xs" value={form.examplesText} onChange={(e) => update('examplesText', e.target.value)} />
+                <textarea className="input-field min-h-56 font-mono text-xs" value={form.examplesText} onChange={(e) => update('examplesText', e.target.value)} readOnly={readOnlyPreview} />
               </label>
               <label className="block">
                 <span className="mb-2 block text-xs font-semibold text-gray-500 dark:text-gray-400">Visible Test Cases JSON</span>
-                <textarea className="input-field min-h-56 font-mono text-xs" value={form.testCasesText} onChange={(e) => update('testCasesText', e.target.value)} />
+                <textarea className="input-field min-h-56 font-mono text-xs" value={form.testCasesText} onChange={(e) => update('testCasesText', e.target.value)} readOnly={readOnlyPreview} />
               </label>
               <label className="block">
                 <span className="mb-2 block text-xs font-semibold text-amber-600 dark:text-amber-300">Hidden Test Cases JSON</span>
-                <textarea className="input-field min-h-56 font-mono text-xs" value={form.hiddenTestCasesText} onChange={(e) => update('hiddenTestCasesText', e.target.value)} />
+                <textarea className="input-field min-h-56 font-mono text-xs" value={form.hiddenTestCasesText} onChange={(e) => update('hiddenTestCasesText', e.target.value)} readOnly={readOnlyPreview} />
               </label>
             </div>
           </section>
@@ -157,9 +163,9 @@ function ProblemModal({ problem, onClose, onSaved }) {
 
         <div className="sticky bottom-0 flex justify-end gap-3 border-t border-light-border dark:border-dark-border bg-white/95 dark:bg-dark-surface/95 px-5 py-4 backdrop-blur">
           <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
-          <button type="button" onClick={save} disabled={saving} className="btn-primary inline-flex items-center gap-2">
+          <button type="button" onClick={save} disabled={saving || readOnlyPreview} className="btn-primary inline-flex items-center gap-2" title={readOnlyPreview ? 'Read-only admin preview' : 'Save problem'}>
             <Save className="h-4 w-4" />
-            {saving ? 'Saving...' : 'Save Problem'}
+            {readOnlyPreview ? 'Preview Only' : saving ? 'Saving...' : 'Save Problem'}
           </button>
         </div>
       </div>
@@ -168,6 +174,8 @@ function ProblemModal({ problem, onClose, onSaved }) {
 }
 
 export default function AdminProblems() {
+  const { user } = useAuth();
+  const readOnlyPreview = isDemoAdmin(user);
   const [problems, setProblems] = useState([]);
   const [search, setSearch] = useState('');
   const [difficulty, setDifficulty] = useState('all');
@@ -207,6 +215,10 @@ export default function AdminProblems() {
   }, [problems, search, difficulty, status]);
 
   const toggleStatus = async (problem) => {
+    if (readOnlyPreview) {
+      toast('Admin Demo is read-only. Problem status changes are disabled for recruiter previews.');
+      return;
+    }
     try {
       setActionLoading(problem._id);
       if (problem.isActive === false) {
@@ -225,6 +237,10 @@ export default function AdminProblems() {
   };
 
   const importProblems = async () => {
+    if (readOnlyPreview) {
+      toast('Admin Demo is read-only. Problem imports are disabled for recruiter previews.');
+      return;
+    }
     try {
       const parsed = JSON.parse(importText || '[]');
       const problemsPayload = Array.isArray(parsed) ? parsed : parsed.problems;
@@ -260,15 +276,20 @@ export default function AdminProblems() {
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Create, edit, import, and deactivate problem records with visible and hidden test cases.
           </p>
+          {readOnlyPreview && (
+            <p className="mt-2 inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              Recruiter preview: admin controls are visible but disabled.
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap gap-3">
           <button onClick={fetchProblems} className="btn-secondary inline-flex items-center gap-2">
             <RefreshCw className="h-4 w-4" /> Refresh
           </button>
-          <button onClick={() => setImportOpen(true)} className="btn-secondary inline-flex items-center gap-2">
+          <button onClick={() => readOnlyPreview ? toast('Admin Demo is read-only. Import is disabled for recruiter previews.') : setImportOpen(true)} disabled={readOnlyPreview} className="btn-secondary inline-flex items-center gap-2" title={readOnlyPreview ? 'Read-only admin preview' : 'Import JSON'}>
             <FileJson className="h-4 w-4" /> Import JSON
           </button>
-          <button onClick={() => openEditor()} className="btn-primary inline-flex items-center gap-2">
+          <button onClick={() => readOnlyPreview ? toast('Admin Demo is read-only. New problem creation is disabled for recruiter previews.') : openEditor()} disabled={readOnlyPreview} className="btn-primary inline-flex items-center gap-2" title={readOnlyPreview ? 'Read-only admin preview' : 'New Problem'}>
             <Plus className="h-4 w-4" /> New Problem
           </button>
         </div>
@@ -347,7 +368,7 @@ export default function AdminProblems() {
                       <button onClick={() => openEditor(problem)} className="pagination-btn" aria-label="Edit problem">
                         <Edit className="h-4 w-4" />
                       </button>
-                      <button onClick={() => toggleStatus(problem)} disabled={actionLoading === problem._id} className="pagination-btn" aria-label="Toggle problem status">
+                      <button onClick={() => toggleStatus(problem)} disabled={actionLoading === problem._id || readOnlyPreview} className="pagination-btn" aria-label="Toggle problem status" title={readOnlyPreview ? 'Read-only admin preview' : 'Toggle problem status'}>
                         {problem.isActive === false ? <CheckCircle className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}
                       </button>
                     </div>
@@ -363,6 +384,7 @@ export default function AdminProblems() {
         <ProblemModal
           problem={activeProblem}
           onClose={closeEditor}
+          readOnlyPreview={readOnlyPreview}
           onSaved={() => {
             closeEditor();
             fetchProblems();

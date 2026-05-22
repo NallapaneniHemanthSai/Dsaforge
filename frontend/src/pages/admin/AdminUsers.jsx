@@ -9,8 +9,12 @@ import GlassCard from '../../components/ui/GlassCard';
 import Skeleton from '../../components/ui/Skeleton';
 import EmptyState from '../../components/ui/EmptyState';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
+import { isDemoAdmin } from '../../utils/demoMode';
 
 export default function AdminUsers() {
+  const { user } = useAuth();
+  const readOnlyPreview = isDemoAdmin(user);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -45,6 +49,10 @@ export default function AdminUsers() {
   };
 
   const toggleStatus = async (userId) => {
+    if (readOnlyPreview) {
+      toast('Admin Demo is read-only. Account status changes are disabled for recruiter previews.');
+      return;
+    }
     try {
       setActionLoading(userId);
       const { data } = await api.patch(`/admin/users/${userId}/toggle-status`);
@@ -61,6 +69,10 @@ export default function AdminUsers() {
   };
 
   const changeRole = async (userId, currentRole) => {
+    if (readOnlyPreview) {
+      toast('Admin Demo is read-only. Role changes are disabled for recruiter previews.');
+      return;
+    }
     const nextRole = currentRole === 'admin' ? 'user' : 'admin';
     try {
       setActionLoading(userId);
@@ -91,6 +103,11 @@ export default function AdminUsers() {
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             Search, suspend accounts, change user roles, and monitor registrations. Total: {totalUsers}
           </p>
+          {readOnlyPreview && (
+            <p className="mt-2 inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              Recruiter preview: admin actions are visible but disabled.
+            </p>
+          )}
         </div>
         <button
           onClick={fetchUsers}
@@ -176,15 +193,17 @@ export default function AdminUsers() {
                       <div className="flex justify-end gap-3">
                         <button
                           onClick={() => changeRole(u._id, u.role)}
-                          disabled={actionLoading === u._id}
-                          className="text-xs font-medium text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1"
+                          disabled={actionLoading === u._id || readOnlyPreview}
+                          title={readOnlyPreview ? 'Read-only admin preview' : 'Change role'}
+                          className="text-xs font-medium text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {u.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}
                         </button>
                         <button
                           onClick={() => toggleStatus(u._id)}
-                          disabled={actionLoading === u._id}
-                          className={`text-xs font-semibold inline-flex items-center gap-1 ${u.isDeleted ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}
+                          disabled={actionLoading === u._id || readOnlyPreview}
+                          title={readOnlyPreview ? 'Read-only admin preview' : 'Toggle account status'}
+                          className={`text-xs font-semibold inline-flex items-center gap-1 disabled:cursor-not-allowed disabled:opacity-50 ${u.isDeleted ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}
                         >
                           {u.isDeleted ? 'Activate' : 'Suspend'}
                         </button>
