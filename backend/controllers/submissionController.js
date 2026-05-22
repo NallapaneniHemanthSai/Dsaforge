@@ -191,7 +191,9 @@ exports.submitCode = async (req, res, next) => {
     }
 
     // Combine visible and hidden test cases
-    const allTestCases = [...problem.testCases, ...problem.hiddenTestCases];
+    const visibleTestCases = problem.testCases || [];
+    const hiddenTestCases = problem.hiddenTestCases || [];
+    const allTestCases = [...visibleTestCases, ...hiddenTestCases];
     
     if (allTestCases.length === 0) {
       return res.status(400).json({ success: false, message: 'No test cases defined for this problem' });
@@ -214,7 +216,7 @@ exports.submitCode = async (req, res, next) => {
       memory: executionResult.memory,
       // For security, don't save expected/actual for hidden test cases, or obscure them
       testResults: executionResult.testResults.map((tr, idx) => {
-        if (idx >= problem.testCases.length) {
+        if (idx >= visibleTestCases.length) {
           return {
             passed: tr.passed,
             status: tr.status,

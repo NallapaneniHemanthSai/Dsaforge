@@ -73,6 +73,10 @@ const problemSchema = new mongoose.Schema({
     type: [testCaseSchema],
     default: []
   },
+  hiddenTestCases: {
+    type: [testCaseSchema],
+    default: []
+  },
   isActive: {
     type: Boolean,
     default: true
