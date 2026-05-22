@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api';
+import { isDemoStudent } from '../utils/demoMode';
 
 const LANGUAGES = {
   java: {
@@ -36,6 +37,7 @@ export default function CodeEditor() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { activeTheme } = useTheme();
+  const readOnlyPreview = isDemoStudent(user);
   
   const editorRef = useRef(null);
   
@@ -142,6 +144,10 @@ export default function CodeEditor() {
   };
 
   const handleSave = async () => {
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Code saves are disabled for previews.');
+      return;
+    }
     let finalCodes = { ...codes };
     if (editorRef.current) {
       const currentVal = editorRef.current.getValue();
@@ -183,6 +189,10 @@ export default function CodeEditor() {
   };
 
   const handleRun = async (mode = 'run') => { // mode: 'run' | 'submit'
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Code execution and submissions are disabled for previews.');
+      return;
+    }
     if (problemId === 'demo') {
       toast.error('Cannot run code in demo mode. Please select a real problem.');
       return;
@@ -310,14 +320,14 @@ export default function CodeEditor() {
           <button onClick={handleCopy} className="btn-secondary px-3 py-1.5 flex items-center gap-1.5 text-sm" title="Copy Code">
             <Copy className="w-4 h-4" /> <span className="hidden sm:inline">Copy</span>
           </button>
-          <button onClick={handleSave} disabled={isSaving} className="btn-secondary px-3 py-1.5 flex items-center gap-1.5 text-sm" title="Save Code">
+          <button onClick={handleSave} disabled={isSaving || readOnlyPreview} className="btn-secondary px-3 py-1.5 flex items-center gap-1.5 text-sm" title={readOnlyPreview ? 'Read-only demo preview' : 'Save Code'}>
             {isSaving ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : <Save className="w-4 h-4" />}
             <span className="hidden sm:inline">Save</span>
           </button>
-          <button onClick={() => handleRun('run')} disabled={isRunning} className="btn-secondary border-primary/20 hover:border-primary/50 text-primary px-4 py-1.5 flex items-center gap-1.5 text-sm" title="Run Sample Test Cases">
+          <button onClick={() => handleRun('run')} disabled={isRunning || readOnlyPreview} className="btn-secondary border-primary/20 hover:border-primary/50 text-primary px-4 py-1.5 flex items-center gap-1.5 text-sm" title={readOnlyPreview ? 'Read-only demo preview' : 'Run Sample Test Cases'}>
             <Play className="w-4 h-4" /> Run Samples
           </button>
-          <button onClick={() => handleRun('submit')} disabled={isRunning} className="btn-primary px-4 py-1.5 flex items-center gap-1.5 text-sm shadow-md" title="Submit Solution">
+          <button onClick={() => handleRun('submit')} disabled={isRunning || readOnlyPreview} className="btn-primary px-4 py-1.5 flex items-center gap-1.5 text-sm shadow-md" title={readOnlyPreview ? 'Read-only demo preview' : 'Submit Solution'}>
             {isRunning ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Send className="w-4 h-4 fill-current" />}
             Submit
           </button>

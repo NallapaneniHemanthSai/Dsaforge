@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Code2, BookOpen, Trophy, User, Settings, LogOut,
-  ChevronLeft, ChevronRight, Terminal, Shield, Users, Database, Activity,
+  ChevronLeft, ChevronRight, Terminal, Shield, Users, Database, Activity, Eye, LockKeyhole,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from './Navbar';
+import { getDemoModeLabel, isDemoStudent, isDemoUser } from '../utils/demoMode';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -94,6 +95,9 @@ const Sidebar = () => {
 };
 
 export default function Layout() {
+  const { user } = useAuth();
+  const demoModeLabel = getDemoModeLabel(user);
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-slate-100/90 dark:from-dark-bg dark:to-[#0a0c12]">
       <Navbar />
@@ -101,6 +105,23 @@ export default function Layout() {
         <Sidebar />
         <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full">
           <div className="max-w-7xl mx-auto">
+            {isDemoUser(user) && (
+              <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-primary/20 bg-primary/10 p-4 text-primary dark:border-primary/30 dark:bg-primary/15 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-xl bg-primary/15 p-2">
+                    {isDemoStudent(user) ? <LockKeyhole className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">{demoModeLabel}</p>
+                    <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+                      {isDemoStudent(user)
+                        ? 'Read-only recruiter preview is active. You can explore the product, but saves and destructive changes are disabled.'
+                        : 'Admin demo is active. You can inspect the full dashboard and admin workflows with seeded preview data.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             <Outlet />
           </div>
         </main>

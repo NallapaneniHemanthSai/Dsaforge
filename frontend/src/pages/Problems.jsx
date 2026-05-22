@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import api from '../api';
+import { useAuth } from '../context/AuthContext';
+import { isDemoStudent } from '../utils/demoMode';
 import {
   sheets,
   getTopicsForSheet,
@@ -21,7 +23,7 @@ function DifficultyBadge({ diff }) {
   return <span className={cls}>{diff}</span>;
 }
 
-function StatusSelect({ value, onChange }) {
+function StatusSelect({ value, onChange, disabled = false }) {
   const styles = {
     unsolved: 'text-gray-500 bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700',
     attempted: 'text-amber-700 bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800',
@@ -31,7 +33,8 @@ function StatusSelect({ value, onChange }) {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`text-xs font-semibold rounded-lg px-2.5 py-1.5 border outline-none cursor-pointer ${styles[value]}`}
+      disabled={disabled}
+      className={`text-xs font-semibold rounded-lg px-2.5 py-1.5 border outline-none ${disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'} ${styles[value]}`}
     >
       <option value="unsolved">Unsolved</option>
       <option value="attempted">Attempted</option>
@@ -60,6 +63,8 @@ function Pagination({ page, totalPages, total, onPage }) {
 }
 
 export default function Problems() {
+  const { user } = useAuth();
+  const readOnlyPreview = isDemoStudent(user);
   const [activeSheet, setActiveSheet] = useState('all');
   const [search, setSearch] = useState('');
   const [topicFilter, setTopicFilter] = useState('all');
@@ -99,6 +104,10 @@ export default function Problems() {
   }, []);
 
   const setStatus = async (id, status) => {
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Progress changes are disabled for previews.');
+      return;
+    }
     const prev = progress[id];
     setProgress((u) => ({ ...u, [id]: { ...u[id], status, problemId: id } }));
     try {
@@ -111,6 +120,10 @@ export default function Problems() {
   };
 
   const toggleBookmark = async (id) => {
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Bookmark changes are disabled for previews.');
+      return;
+    }
     const prev = progress[id];
     const next = !prev?.bookmarked;
     setProgress((u) => ({ ...u, [id]: { ...u[id], bookmarked: next, problemId: id } }));
@@ -188,7 +201,7 @@ export default function Problems() {
     return (
       <tr key={problem.id} className="table-row-hover">
         <td className="px-5 py-3.5">
-          <StatusSelect value={status} onChange={(v) => setStatus(problem.id, v)} />
+          <StatusSelect value={status} onChange={(v) => setStatus(problem.id, v)} disabled={readOnlyPreview} />
         </td>
         <td className="px-5 py-3.5">
           <div className="flex items-center gap-2 min-w-0">
@@ -208,7 +221,9 @@ export default function Problems() {
           <button
             type="button"
             onClick={() => toggleBookmark(problem.id)}
+            disabled={readOnlyPreview}
             className={`p-2 rounded-lg ${prog?.bookmarked ? 'text-primary bg-primary/15' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+            title={readOnlyPreview ? 'Read-only demo preview' : 'Toggle bookmark'}
           >
             <Bookmark className={`w-4 h-4 ${prog?.bookmarked ? 'fill-current' : ''}`} />
           </button>

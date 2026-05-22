@@ -4,10 +4,12 @@ import { Settings as SettingsIcon, Moon, Sun, Monitor, Bell, Code, Key } from 'l
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api';
+import { isDemoStudent } from '../utils/demoMode';
 
 export default function Settings() {
   const { user, setUser } = useAuth();
   const { theme, changeTheme } = useTheme();
+  const readOnlyPreview = isDemoStudent(user);
   
   const [settings, setSettings] = useState({
     theme: 'system',
@@ -38,6 +40,10 @@ export default function Settings() {
   }, [settings.theme, theme, changeTheme]);
 
   const handleSave = async () => {
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Preference changes are disabled for previews.');
+      return;
+    }
     setSaving(true);
     try {
       const { data } = await api.patch('/user/settings', settings);
@@ -71,8 +77,9 @@ export default function Settings() {
         </div>
         <button 
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || readOnlyPreview}
           className="btn-primary px-6 flex items-center"
+          title={readOnlyPreview ? 'Read-only demo preview' : 'Save preferences'}
         >
           {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div> : null}
           Save Preferences

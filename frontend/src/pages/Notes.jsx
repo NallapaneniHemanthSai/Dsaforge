@@ -11,8 +11,12 @@ import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import useDebounce from '../hooks/useDebounce';
 import api from '../api';
 import GlassCard from '../components/ui/GlassCard';
+import { useAuth } from '../context/AuthContext';
+import { isDemoStudent } from '../utils/demoMode';
 
 export default function Notes() {
+  const { user } = useAuth();
+  const readOnlyPreview = isDemoStudent(user);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState('saved'); // 'saved', 'saving', 'error'
@@ -39,7 +43,7 @@ export default function Notes() {
 
   // Auto-save logic
   useEffect(() => {
-    if (loading) return; // Don't trigger save on initial load
+    if (loading || readOnlyPreview) return; // Don't trigger save on initial load or demo preview
 
     const saveNotes = async () => {
       setSaveStatus('saving');
@@ -56,9 +60,13 @@ export default function Notes() {
     if (debouncedContent !== undefined) {
       saveNotes();
     }
-  }, [debouncedContent, loading]);
+  }, [debouncedContent, loading, readOnlyPreview]);
 
   const insertMarkdown = (syntax, placeholder = '') => {
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Notes editing is disabled for previews.');
+      return;
+    }
     const textarea = document.getElementById('notes-textarea');
     if (!textarea) return;
 
@@ -123,9 +131,10 @@ export default function Notes() {
           <div>
             <h2 className="font-extrabold text-lg text-gray-900 dark:text-white">Workspace Notes</h2>
             <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-              {saveStatus === 'saving' && <span className="flex items-center gap-1"><Save className="w-3.5 h-3.5 animate-spin" /> Saving...</span>}
-              {saveStatus === 'saved' && <span className="flex items-center gap-1 text-green-500 font-medium"><CheckCircle2 className="w-3.5 h-3.5" /> Saved</span>}
-              {saveStatus === 'error' && <span className="text-red-500 font-semibold">Save failed</span>}
+              {readOnlyPreview && <span className="font-semibold text-primary">Read-only preview</span>}
+              {!readOnlyPreview && saveStatus === 'saving' && <span className="flex items-center gap-1"><Save className="w-3.5 h-3.5 animate-spin" /> Saving...</span>}
+              {!readOnlyPreview && saveStatus === 'saved' && <span className="flex items-center gap-1 text-green-500 font-medium"><CheckCircle2 className="w-3.5 h-3.5" /> Saved</span>}
+              {!readOnlyPreview && saveStatus === 'error' && <span className="text-red-500 font-semibold">Save failed</span>}
               {lastSavedTime && <span>• Auto-saved: {lastSavedTime.toLocaleTimeString()}</span>}
             </div>
           </div>
@@ -190,11 +199,13 @@ export default function Notes() {
                 id="notes-textarea"
                 value={content}
                 onChange={(e) => {
+                  if (readOnlyPreview) return;
                   setContent(e.target.value);
                   if (saveStatus === 'saved') setSaveStatus('saving');
                 }}
+                readOnly={readOnlyPreview}
                 placeholder="Start writing algorithm summaries, notes, or placement checklist items using markdown syntax..."
-                className="flex-1 w-full p-6 bg-transparent outline-none resize-none text-base leading-relaxed text-gray-800 dark:text-gray-200 font-mono"
+                className={`flex-1 w-full p-6 bg-transparent outline-none resize-none text-base leading-relaxed text-gray-800 dark:text-gray-200 font-mono ${readOnlyPreview ? 'cursor-default' : ''}`}
                 spellCheck="false"
               />
             </div>
