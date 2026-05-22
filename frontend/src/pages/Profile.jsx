@@ -3,9 +3,11 @@ import { toast } from 'react-hot-toast';
 import { User as UserIcon, Mail, Calendar, Key, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
+import { isDemoStudent } from '../utils/demoMode';
 
 export default function Profile() {
   const { user, setUser } = useAuth();
+  const readOnlyPreview = isDemoStudent(user);
   
   // Profile Form
   const [profileData, setProfileData] = useState({
@@ -39,6 +41,10 @@ export default function Profile() {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Profile changes are disabled for previews.');
+      return;
+    }
     setUpdatingProfile(true);
     try {
       const { data } = await api.patch('/user/profile', profileData);
@@ -53,6 +59,10 @@ export default function Profile() {
 
   const handlePasswordUpdate = async (e) => {
     e.preventDefault();
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Password changes are disabled for previews.');
+      return;
+    }
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast.error('New passwords do not match');
       return;
@@ -70,6 +80,10 @@ export default function Profile() {
   };
 
   const handleDeleteAccount = async () => {
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Account deletion is disabled for previews.');
+      return;
+    }
     if (deleteConfirmation !== 'DELETE') {
       toast.error('Please type DELETE to confirm');
       return;
@@ -120,8 +134,13 @@ export default function Profile() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Account Type</span>
-                <span className="font-medium">Student</span>
+                <span className="font-medium">{readOnlyPreview ? 'Student Demo' : 'Student'}</span>
               </div>
+              {readOnlyPreview && (
+                <div className="rounded-lg border border-primary/20 bg-primary/10 p-3 text-xs leading-relaxed text-primary">
+                  Recruiter preview mode is read-only, so profile, password, and deletion actions are disabled.
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -173,7 +192,7 @@ export default function Profile() {
               </div>
 
               <div className="flex justify-end pt-2">
-                <button type="submit" disabled={updatingProfile} className="btn-primary flex items-center px-6">
+                <button type="submit" disabled={updatingProfile || readOnlyPreview} className="btn-primary flex items-center px-6">
                   {updatingProfile ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div> : null}
                   Save Changes
                 </button>
@@ -224,7 +243,7 @@ export default function Profile() {
               </div>
 
               <div className="flex justify-end pt-2">
-                <button type="submit" disabled={updatingPassword} className="btn-secondary flex items-center px-6">
+                <button type="submit" disabled={updatingPassword || readOnlyPreview} className="btn-secondary flex items-center px-6">
                   {updatingPassword ? <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin mr-2"></div> : null}
                   Update Password
                 </button>
@@ -253,7 +272,7 @@ export default function Profile() {
               />
               <button 
                 onClick={handleDeleteAccount}
-                disabled={deleting || deleteConfirmation !== 'DELETE'}
+                disabled={deleting || deleteConfirmation !== 'DELETE' || readOnlyPreview}
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center whitespace-nowrap"
               >
                 {deleting ? 'Deleting...' : 'Delete Account'}

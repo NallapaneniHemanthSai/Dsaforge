@@ -4,8 +4,12 @@ import { toast } from 'react-hot-toast';
 import { Terminal, Plus, Trash2, Edit2, Code2, Clock } from 'lucide-react';
 import api from '../api';
 import GlassCard from '../components/ui/GlassCard';
+import { useAuth } from '../context/AuthContext';
+import { isDemoStudent } from '../utils/demoMode';
 
 export default function Playground() {
+  const { user } = useAuth();
+  const readOnlyPreview = isDemoStudent(user);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -27,6 +31,10 @@ export default function Playground() {
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
+    if (readOnlyPreview) {
+      toast('Student Demo is read-only. Program deletion is disabled for previews.');
+      return;
+    }
     if (window.confirm('Are you sure you want to delete this program?')) {
       try {
         await api.delete(`/programs/${id}`);
@@ -66,8 +74,10 @@ export default function Playground() {
           <p className="text-gray-500 text-sm mt-1">Write, execute, and store your coding snippets.</p>
         </div>
         <button 
-          onClick={() => navigate('/playground/new')}
+          onClick={() => readOnlyPreview ? toast('Student Demo is read-only. New programs are disabled for previews.') : navigate('/playground/new')}
+          disabled={readOnlyPreview}
           className="btn-primary flex items-center gap-2"
+          title={readOnlyPreview ? 'Read-only demo preview' : 'Create new program'}
         >
           <Plus className="w-5 h-5" />
           New Program
@@ -80,7 +90,8 @@ export default function Playground() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No programs yet</h3>
           <p className="text-gray-500 max-w-sm mb-6">You haven't saved any code snippets yet. Create your first program to get started.</p>
           <button 
-            onClick={() => navigate('/playground/new')}
+            onClick={() => readOnlyPreview ? toast('Student Demo is read-only. New programs are disabled for previews.') : navigate('/playground/new')}
+            disabled={readOnlyPreview}
             className="btn-primary"
           >
             Create First Program
@@ -103,7 +114,9 @@ export default function Playground() {
                 </div>
                 <button 
                   onClick={(e) => handleDelete(program._id, e)}
-                  className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+                  disabled={readOnlyPreview}
+                  className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 disabled:cursor-not-allowed disabled:opacity-40"
+                  title={readOnlyPreview ? 'Read-only demo preview' : 'Delete program'}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

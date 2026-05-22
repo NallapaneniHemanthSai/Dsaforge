@@ -1,14 +1,37 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { Eye, EyeOff, Zap } from 'lucide-react';
+import { Eye, EyeOff, GraduationCap, ShieldCheck, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
+import { DEMO_ADMIN_EMAIL, DEMO_STUDENT_EMAIL } from '../utils/demoMode';
+
+const demoAccounts = {
+  student: {
+    email: DEMO_STUDENT_EMAIL,
+    password: 'Demo@123',
+    title: 'Student Demo',
+    subtitle: 'Read-only preview',
+    description: 'Explore dashboard, problems, notes, leaderboard, and playground without changing demo data.',
+    icon: GraduationCap,
+    redirect: '/dashboard',
+  },
+  admin: {
+    email: DEMO_ADMIN_EMAIL,
+    password: 'Admin@123',
+    title: 'Admin Demo',
+    subtitle: 'Full dashboard',
+    description: 'Open the admin suite with users, problems, submissions, analytics, and platform controls.',
+    icon: ShieldCheck,
+    redirect: '/admin/dashboard',
+  },
+};
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -38,7 +61,7 @@ export default function Login() {
       const { data } = await api.post('/auth/login', formData);
       login(data.accessToken, data.user);
       toast.success(data.message);
-      navigate('/dashboard');
+      navigate(data.user?.role === 'admin' ? '/admin/dashboard' : '/dashboard');
     } catch (error) {
       const msg = error.response?.data?.message || 'Login failed';
       toast.error(msg);
@@ -54,18 +77,23 @@ export default function Login() {
     }
   };
 
-  const handleDemoLogin = async (email, password) => {
-    setLoading(true);
+  const handleDemoLogin = async (mode) => {
+    const account = demoAccounts[mode];
+    setDemoLoading(mode);
     try {
-      const { data } = await api.post('/auth/login', { email, password, rememberMe: false });
+      const { data } = await api.post('/auth/login', {
+        email: account.email,
+        password: account.password,
+        rememberMe: false,
+      });
       login(data.accessToken, data.user);
-      toast.success('Logged in successfully in preview mode!');
-      navigate('/dashboard');
+      toast.success(`${account.title} opened successfully`);
+      navigate(account.redirect);
     } catch (error) {
       const msg = error.response?.data?.message || 'Demo login failed';
       toast.error(msg);
     } finally {
-      setLoading(false);
+      setDemoLoading(null);
     }
   };
 
@@ -189,23 +217,41 @@ export default function Login() {
                 Recruiter & Guest Preview
               </span>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={() => handleDemoLogin('demo@kluniversity.in', 'demo123')}
-                disabled={loading}
-                className="flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-surface/30 hover:bg-white dark:hover:bg-dark-surface hover:border-primary/40 hover:shadow-md transition-all text-center group"
-              >
-                <span className="text-xs font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">Student Demo</span>
-                <span className="text-[10px] text-gray-500 mt-0.5">Read-Only Preview</span>
-              </button>
-              <button
-                onClick={() => handleDemoLogin('admin@kluniversity.in', 'admin123')}
-                disabled={loading}
-                className="flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-surface/30 hover:bg-white dark:hover:bg-dark-surface hover:border-primary/40 hover:shadow-md transition-all text-center group"
-              >
-                <span className="text-xs font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">Admin Demo</span>
-                <span className="text-[10px] text-gray-500 mt-0.5">Full Dashboard</span>
-              </button>
+            <div className="grid gap-4">
+              {Object.entries(demoAccounts).map(([mode, account]) => {
+                const Icon = account.icon;
+                const isLoading = demoLoading === mode;
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => handleDemoLogin(mode)}
+                    disabled={loading || Boolean(demoLoading)}
+                    className="group flex items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 text-left transition-all hover:border-primary/40 hover:bg-white hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70 dark:border-dark-border dark:bg-dark-surface/40 dark:hover:bg-dark-surface"
+                  >
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      {isLoading ? (
+                        <div className="h-5 w-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                      ) : (
+                        <Icon className="h-5 w-5" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-bold text-gray-900 transition-colors group-hover:text-primary dark:text-white">
+                          {account.title}
+                        </span>
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                          {account.subtitle}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+                        {account.description}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
