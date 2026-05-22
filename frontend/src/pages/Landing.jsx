@@ -117,7 +117,7 @@ const HeroSection = () => {
                 <div className="w-3 h-3 rounded-full bg-green-400" />
               </div>
               <div className="flex-1 ml-3 h-6 rounded-md bg-gray-200/80 dark:bg-gray-700/50 flex items-center px-3">
-                <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono">dsaforge.app/dashboard</span>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 font-mono">dsaforge.app/dashboard</span>
               </div>
             </div>
             {/* Mock Dashboard Content */}
@@ -126,7 +126,7 @@ const HeroSection = () => {
                 <div className="flex gap-4">
                   {['Problems Solved', 'Current Streak', 'Accuracy'].map((label, i) => (
                     <div key={i} className="flex-1 rounded-xl bg-gray-50 dark:bg-dark-bg/60 border border-gray-100 dark:border-white/5 p-4">
-                      <div className="text-[10px] text-gray-400 dark:text-gray-500 mb-1">{label}</div>
+                      <div className="text-[10px] text-gray-500 dark:text-gray-400 mb-1">{label}</div>
                       <div className="text-xl font-bold text-gray-900 dark:text-white">
                         {['247', '14🔥', '89%'][i]}
                       </div>
@@ -135,7 +135,7 @@ const HeroSection = () => {
                 </div>
                 {/* Mock Heatmap */}
                 <div className="rounded-xl bg-gray-50 dark:bg-dark-bg/60 border border-gray-100 dark:border-white/5 p-4">
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mb-3">Contribution Heatmap</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">Contribution Heatmap</div>
                   <div className="flex gap-[3px] flex-wrap">
                     {Array.from({ length: 52 }).map((_, i) => (
                       <div key={i} className="flex flex-col gap-[3px]">
@@ -152,7 +152,7 @@ const HeroSection = () => {
               {/* Sidebar stats */}
               <div className="space-y-4">
                 <div className="rounded-xl bg-gray-50 dark:bg-dark-bg/60 border border-gray-100 dark:border-white/5 p-4">
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mb-3">Topic Progress</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">Topic Progress</div>
                   {['Arrays', 'Trees', 'DP', 'Graphs'].map((t, i) => (
                     <div key={i} className="mb-2">
                       <div className="flex justify-between text-[10px] mb-1">

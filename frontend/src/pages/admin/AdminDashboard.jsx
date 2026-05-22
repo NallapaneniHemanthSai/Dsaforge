@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Users as UsersIcon, Award, Shield, AlertTriangle, 
-  Settings, ArrowLeft, RefreshCw, BarChart2, PieChart as PieChartIcon
+  Settings, ArrowLeft, RefreshCw, BarChart2, PieChart as PieChartIcon, Code2, Activity
 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import api from '../../api';
@@ -65,9 +65,9 @@ export default function AdminDashboard() {
   const COLORS = ['#6366F1', '#EF4444'];
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-light-border dark:border-dark-border pb-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white flex items-center gap-2">
             <Shield className="w-8 h-8 text-primary" /> Admin Dashboard
@@ -84,6 +84,12 @@ export default function AdminDashboard() {
             <RefreshCw className="w-5 h-5 text-gray-500 group-hover:rotate-180 transition-transform duration-500" />
           </button>
           <Link
+            to="/admin/problems"
+            className="btn-secondary flex items-center gap-2 font-medium"
+          >
+            <Code2 className="w-5 h-5" /> Manage Problems
+          </Link>
+          <Link
             to="/admin/users"
             className="btn-primary flex items-center gap-2 font-medium"
           >
@@ -93,8 +99,8 @@ export default function AdminDashboard() {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <GlassCard hover={false} className="p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <GlassCard hover={false} className="p-4 sm:p-5">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Total Registrations</span>
@@ -104,10 +110,10 @@ export default function AdminDashboard() {
               <UsersIcon className="w-6 h-6" />
             </div>
           </div>
-          <div className="text-xs text-gray-500 mt-4">Verified: <span className="font-semibold text-green-500">{userStats.verified}</span></div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-4">Verified: <span className="font-semibold text-green-500">{userStats.verified}</span></div>
         </GlassCard>
 
-        <GlassCard hover={false} className="p-6">
+        <GlassCard hover={false} className="p-4 sm:p-5">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Active Students</span>
@@ -117,10 +123,10 @@ export default function AdminDashboard() {
               <Award className="w-6 h-6" />
             </div>
           </div>
-          <div className="text-xs text-gray-500 mt-4">Suspended: <span className="font-semibold text-red-500">{userStats.suspended}</span></div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-4">Suspended: <span className="font-semibold text-red-500">{userStats.suspended}</span></div>
         </GlassCard>
 
-        <GlassCard hover={false} className="p-6">
+        <GlassCard hover={false} className="p-4 sm:p-5">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Mock Solved Aggregates</span>
@@ -130,27 +136,27 @@ export default function AdminDashboard() {
               <BarChart2 className="w-6 h-6" />
             </div>
           </div>
-          <div className="text-xs text-gray-500 mt-4">Attempted: <span className="font-semibold text-amber-500">{problemStats.attempted}</span></div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-4">Attempted: <span className="font-semibold text-amber-500">{problemStats.attempted}</span></div>
         </GlassCard>
 
-        <GlassCard hover={false} className="p-6 bg-primary/5 border-primary/20">
+        <GlassCard hover={false} className="p-4 sm:p-5">
           <div className="flex justify-between items-start">
             <div>
-              <span className="text-primary text-xs font-semibold uppercase tracking-wider">Demo / Preview Mode</span>
-              <h3 className="text-sm font-semibold mt-2 text-gray-600 dark:text-gray-400">Limited mutations strictly enforced.</h3>
+              <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Total Submissions</span>
+              <h3 className="text-3xl font-bold mt-2 text-blue-500">{stats?.submissions?.total || 0}</h3>
             </div>
-            <div className="p-3 rounded-xl bg-primary/10 text-primary">
-              <Settings className="w-6 h-6" />
+            <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500">
+              <Activity className="w-6 h-6" />
             </div>
           </div>
-          <div className="text-[10px] text-gray-400 mt-4">Security isolation active.</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-4">Acceptance Rate: <span className="font-semibold text-blue-400">{stats?.submissions?.acceptanceRate || '0%'}</span></div>
         </GlassCard>
       </div>
 
       {/* Visual Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <GlassCard hover={false} className="p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <GlassCard hover={false} className="p-4 sm:p-5 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
               <PieChartIcon className="w-5 h-5 text-primary" /> Account Status Split
             </h3>
@@ -185,8 +191,8 @@ export default function AdminDashboard() {
           </div>
         </GlassCard>
 
-        <GlassCard hover={false} className="p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-6">
+        <GlassCard hover={false} className="p-4 sm:p-5 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
               <BarChart2 className="w-5 h-5 text-primary" /> Problem Submissions Overview
             </h3>
@@ -208,7 +214,7 @@ export default function AdminDashboard() {
               </div>
             )}
           </div>
-          <div className="text-center text-xs text-gray-500 mt-4">Solves are tracked dynamically across student catalogs</div>
+          <div className="text-center text-xs text-gray-500 dark:text-gray-400 mt-4">Solves are tracked dynamically across student catalogs</div>
         </GlassCard>
       </div>
     </div>
