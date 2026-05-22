@@ -19,6 +19,8 @@ import Notes from './pages/Notes';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import Playground from './pages/Playground';
+import PlaygroundEditor from './pages/PlaygroundEditor';
 import NotFound from './pages/NotFound';
 
 // Admin Components
@@ -71,6 +73,8 @@ function App() {
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/playground" element={<Playground />} />
+                <Route path="/playground/:id" element={<PlaygroundEditor />} />
 
                 {/* Admin Routes */}
                 <Route element={<AdminRoute />}>
