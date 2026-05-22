@@ -11,16 +11,8 @@ const restrictDemoUser = (req, res, next) => {
     // We allow running/submitting code or fetching notes, but block user mutations like password changes, profile deletion, etc.
     const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
     
-    // We specifically allow:
-    // - Submitting/compiling code
-    // - Requesting new tokens
-    // We block:
-    // - Changing passwords, updating profile info, deleting accounts
-    const allowedDemoMutations = isDemoAdmin ? [
-      '/api/auth/logout',
-      '/api/auth/refresh',
-      '/api/admin/',
-    ] : [
+    // Demo accounts can browse preview data, but cannot change platform data.
+    const allowedDemoMutations = [
       '/api/auth/logout',
       '/api/auth/refresh',
     ];

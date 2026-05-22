@@ -27,17 +27,12 @@ const protect = async (req, res, next) => {
 
       req.user = user;
 
-      // Keep the student demo read-only so recruiter/guest previews stay clean.
-      // The admin demo can use admin dashboard actions, but regular account mutations remain blocked.
+      // Keep demo accounts read-only so recruiter/guest previews stay clean.
       const isDemoStudent = user.email === 'demo@kluniversity.in';
       const isDemoAdmin = user.email === 'admin@kluniversity.in';
       if (isDemoStudent || isDemoAdmin) {
         const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
-        const allowedDemoMutations = isDemoAdmin ? [
-          '/api/auth/logout',
-          '/api/auth/refresh',
-          '/api/admin/',
-        ] : [
+        const allowedDemoMutations = [
           '/api/auth/logout',
           '/api/auth/refresh',
         ];
