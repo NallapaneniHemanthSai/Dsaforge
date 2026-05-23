@@ -10,8 +10,11 @@ export default function VerifyOTP() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const email = location.state?.email;
+  const initialDevOtp = location.state?.devOtp || '';
   
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [devOtp, setDevOtp] = useState(initialDevOtp);
+  const [emailDeliveryFailed, setEmailDeliveryFailed] = useState(Boolean(location.state?.emailDeliveryFailed));
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
@@ -91,6 +94,10 @@ export default function VerifyOTP() {
     try {
       const { data } = await api.post('/auth/resend-otp', { email });
       toast.success(data.message);
+      if (data.devOtp) {
+        setDevOtp(data.devOtp);
+        setEmailDeliveryFailed(Boolean(data.emailDeliveryFailed));
+      }
       setTimeLeft(600);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
@@ -125,6 +132,13 @@ export default function VerifyOTP() {
             We've sent a 6-digit verification code to <br/>
             <span className="font-semibold text-gray-900 dark:text-white">{email}</span>
           </p>
+          {emailDeliveryFailed && devOtp && (
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-left text-sm text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-200">
+              <p className="font-semibold">Email delivery failed in development mode.</p>
+              <p className="mt-1">Use this OTP to continue locally:</p>
+              <p className="mt-2 font-mono text-2xl font-extrabold tracking-[0.35em] text-amber-700 dark:text-amber-100">{devOtp}</p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">

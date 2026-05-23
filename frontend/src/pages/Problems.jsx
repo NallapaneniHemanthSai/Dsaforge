@@ -9,9 +9,8 @@ import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import { isDemoStudent } from '../utils/demoMode';
 import {
+  problems as catalogProblems,
   sheets,
-  getTopicsForSheet,
-  getSheetCounts,
   getSheetById,
   TOTAL_PROBLEMS,
 } from '../data/problems';
@@ -78,7 +77,14 @@ export default function Problems() {
   const [loading, setLoading] = useState(true);
   const [apiProblems, setApiProblems] = useState([]);
 
-  const sheetCounts = useMemo(() => getSheetCounts(), []);
+  const sheetCounts = useMemo(() => {
+    const source = apiProblems.length ? apiProblems : catalogProblems;
+    const counts = { all: source.length };
+    sheets.forEach((sheet) => {
+      counts[sheet.id] = source.filter((problem) => problem.sheet === sheet.id).length;
+    });
+    return counts;
+  }, [apiProblems]);
   const sheetMeta = activeSheet !== 'all' ? getSheetById(activeSheet) : null;
 
   useEffect(() => {
@@ -93,10 +99,12 @@ export default function Problems() {
         const map = {};
         progressRes.data.progress.forEach((p) => { map[p.problemId] = p; });
         setProgress(map);
-        setApiProblems(problemsRes.data.data || []);
+        const loadedProblems = problemsRes.data.data || [];
+        setApiProblems(loadedProblems.length ? loadedProblems : catalogProblems);
       } catch (e) {
         console.error(e);
-        toast.error('Failed to load problems');
+        setApiProblems(catalogProblems);
+        toast.error('Loaded local problem catalog because the API problem list is unavailable');
       } finally {
         setLoading(false);
       }
@@ -180,7 +188,11 @@ export default function Problems() {
 
   useEffect(() => { setPage(1); }, [activeSheet, search, topicFilter, difficultyFilter, statusFilter, bookmarkedOnly]);
 
-  const topics = useMemo(() => getTopicsForSheet(activeSheet), [activeSheet]);
+  const topics = useMemo(() => {
+    const source = apiProblems.length ? apiProblems : catalogProblems;
+    const filteredSource = activeSheet === 'all' ? source : source.filter((problem) => problem.sheet === activeSheet);
+    return [...new Set(filteredSource.map((problem) => problem.topic).filter(Boolean))].sort();
+  }, [activeSheet, apiProblems]);
 
   const tableHead = (
     <thead>
@@ -205,7 +217,7 @@ export default function Problems() {
         </td>
         <td className="px-5 py-3.5">
           <div className="flex items-center gap-2 min-w-0">
-            <a href={problem.link} target="_blank" rel="noreferrer" className="font-medium hover:text-primary truncate flex items-center gap-1">
+            <a href={problem.link || problem.externalLink || '#'} target="_blank" rel="noreferrer" className="font-medium hover:text-primary truncate flex items-center gap-1">
               {problem.title}
               <ExternalLink className="w-3.5 h-3.5 opacity-40 shrink-0" />
             </a>
@@ -237,7 +249,7 @@ export default function Problems() {
       <div className="page-hero">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
-            <span className="hero-badge"><Sparkles className="w-4 h-4" /> {TOTAL_PROBLEMS}+ DSA problems</span>
+            <span className="hero-badge"><Sparkles className="w-4 h-4" /> {(apiProblems.length || TOTAL_PROBLEMS)}+ DSA problems</span>
             <h1 className="text-3xl md:text-4xl font-bold mt-3">Problem Library</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2 max-w-2xl">
               Structured sheets with subtopics for KL students — track progress, code in Java, ace placements.

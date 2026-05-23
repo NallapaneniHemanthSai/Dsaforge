@@ -122,7 +122,13 @@ export default function Signup() {
     try {
       const { data } = await api.post('/auth/signup', formData);
       toast.success(data.message);
-      navigate('/verify-otp', { state: { email: formData.email } });
+      navigate('/verify-otp', {
+        state: {
+          email: formData.email,
+          devOtp: data.devOtp,
+          emailDeliveryFailed: data.emailDeliveryFailed,
+        },
+      });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Signup failed');
     } finally {

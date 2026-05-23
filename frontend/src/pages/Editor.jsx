@@ -60,6 +60,15 @@ export default function CodeEditor() {
   // Sync editor value with current codes state when language changes
   const currentCode = codes[selectedLang];
 
+  const fetchHistory = async () => {
+    try {
+      const res = await api.get(`/submissions/problem/${problemId}`);
+      setHistory(res.data.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (problemId === 'demo') {
@@ -112,14 +121,6 @@ export default function CodeEditor() {
     fetchData();
   }, [problemId, navigate]);
 
-  const fetchHistory = async () => {
-    try {
-      const res = await api.get(`/submissions/problem/${problemId}`);
-      setHistory(res.data.data);
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
