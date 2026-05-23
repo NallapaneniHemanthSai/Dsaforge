@@ -26,6 +26,24 @@ const validate = (req, res) => {
   return null;
 };
 
+const canReturnDevOtp = () => !env.isProduction;
+
+const otpEmailFailureResponse = (res, email, otp, fallbackMessage) => {
+  if (canReturnDevOtp()) {
+    return res.status(200).json({
+      message: `${fallbackMessage} SMTP delivery failed, so a development OTP is shown on the verification screen.`,
+      email: email.toLowerCase(),
+      devOtp: otp,
+      emailDeliveryFailed: true,
+    });
+  }
+
+  return res.status(503).json({
+    message: fallbackMessage,
+    email: email.toLowerCase(),
+  });
+};
+
 exports.signup = async (req, res, next) => {
   try {
     const validationError = validate(req, res);
@@ -63,10 +81,12 @@ exports.signup = async (req, res, next) => {
             await sendOTPEmail(email, name, otp);
           } catch (emailErr) {
             console.error('📧 OTP email failed during re-signup:', emailErr.message);
-            return res.status(503).json({
-              message: 'Account updated but failed to send OTP email. Please try resending OTP.',
-              email: email.toLowerCase()
-            });
+            return otpEmailFailureResponse(
+              res,
+              email,
+              otp,
+              'Account updated but failed to send OTP email. Please try resending OTP.'
+            );
           }
 
           return res.status(200).json({
@@ -103,10 +123,12 @@ exports.signup = async (req, res, next) => {
       await sendOTPEmail(email, name, otp);
     } catch (emailErr) {
       console.error('📧 OTP email failed during signup:', emailErr.message);
-      return res.status(503).json({
-        message: 'Account created but failed to send OTP email. Please try resending OTP.',
-        email: email.toLowerCase()
-      });
+      return otpEmailFailureResponse(
+        res,
+        email,
+        otp,
+        'Account created but failed to send OTP email. Please try resending OTP.'
+      );
     }
 
     res.status(201).json({
@@ -266,6 +288,14 @@ exports.resendOtp = async (req, res, next) => {
       await sendOTPEmail(user.email, user.name, otp);
     } catch (emailErr) {
       console.error('📧 OTP resend email failed:', emailErr.message);
+      if (canReturnDevOtp()) {
+        return res.json({
+          message: 'SMTP delivery failed, so a development OTP is shown on the verification screen.',
+          resendsRemaining: OTP_MAX_RESENDS - user.otpResendCount,
+          devOtp: otp,
+          emailDeliveryFailed: true,
+        });
+      }
       return res.status(503).json({
         message: 'Failed to send OTP email. Please try again later.'
       });
@@ -315,10 +345,24 @@ exports.login = async (req, res, next) => {
         // Don't reset otpResendCount here — this is an auto-resend from login
         await user.save();
 
+        let devOtp = null;
         try {
           await sendOTPEmail(user.email, user.name, otp);
         } catch (emailErr) {
           console.error('📧 Login auto-resend OTP email failed:', emailErr.message);
+          if (canReturnDevOtp()) {
+            devOtp = otp;
+          }
+        }
+
+        if (devOtp) {
+          return res.status(403).json({
+            message: 'Please verify your email first. SMTP delivery failed, so a development OTP is shown on the verification screen.',
+            needsVerification: true,
+            email: user.email,
+            devOtp,
+            emailDeliveryFailed: true,
+          });
         }
       }
 
@@ -491,4 +535,3 @@ exports.checkUsername = async (req, res, next) => {
     next(error);
   }
 };
-
