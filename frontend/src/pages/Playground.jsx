@@ -14,10 +14,6 @@ export default function Playground() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchPrograms();
-  }, []);
-
   const fetchPrograms = async () => {
     try {
       const { data } = await api.get('/programs');
@@ -28,6 +24,11 @@ export default function Playground() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPrograms();
+  }, []);
+
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();

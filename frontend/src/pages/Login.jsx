@@ -69,7 +69,13 @@ export default function Login() {
       // If unverified, redirect to OTP
       if (error.response?.data?.needsVerification) {
         setTimeout(() => {
-          navigate('/verify-otp', { state: { email: formData.email } });
+          navigate('/verify-otp', {
+            state: {
+              email: formData.email,
+              devOtp: error.response?.data?.devOtp,
+              emailDeliveryFailed: error.response?.data?.emailDeliveryFailed,
+            },
+          });
         }, 1500);
       }
     } finally {
